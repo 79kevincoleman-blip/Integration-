@@ -4,8 +4,23 @@
   "equity_high": 100000.0,
   "day_start_equity": 100000.0,
   "risk_pct": 0.01,
-  "next_id": 1,
-  "proposals": [],
+  "next_id": 2,
+  "proposals": [
+    {
+      "id": 1,
+      "date": "2026-11-12",
+      "symbol": "AMD",
+      "side": "BUY",
+      "entry_low": 565,
+      "entry_high": 570,
+      "condition": "after 9:45 ET and price > 560",
+      "stop": 553,
+      "target": 598,
+      "shares": 44,
+      "setup": "Relative strength vs NVDA CEO selloff",
+      "status": "awaiting_reply"
+    }
+  ],
   "positions": [],
   "closed": []
 }
