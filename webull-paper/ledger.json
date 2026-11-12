@@ -1,0 +1,11 @@
+{
+  "starting_equity": 100000.0,
+  "cash": 100000.0,
+  "equity_high": 100000.0,
+  "day_start_equity": 100000.0,
+  "risk_pct": 0.01,
+  "next_id": 1,
+  "proposals": [],
+  "positions": [],
+  "closed": []
+}
