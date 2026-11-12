@@ -1,1 +1,2 @@
 date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_multiple,lesson
+2026-11-12,1,AMD,RS vs NVDA,565-570,553,598,44,NVDA CEO turmoil rotation,,expired (no reply),0,0,Owner unreachable at open; reissued as #2
