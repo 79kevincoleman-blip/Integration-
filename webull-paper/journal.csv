@@ -4,3 +4,4 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-12,2-shadow,AMD,RS vs NVDA,567,553,598,44,Hypothetical if #2 confirmed at 9:51,582.00,3:50 flatten (hypothetical),660,1.07,Setup worked; approval latency cost the trade
 2026-11-13,-,AMD,watchlist,-,-,-,0,Needed hold >575 and break 594; opened 566.8 and fell to 526 (-10%),,skipped (condition failed),0,0,Watchlist trigger kept us out of a -10% day
 2026-11-13,-,AMD,watchlist,-,-,-,0,At day low 522 below VWAP 538; downtrend no reclaim,,skipped,0,0,No catching falling knives
+2026-11-13,-,AMD,watchlist,-,-,-,0,527 below VWAP 539; weak bounce off 520 low,,skipped,0,0,No reclaim of VWAP
