@@ -4,7 +4,7 @@
   "equity_high": 100000.0,
   "day_start_equity": 100000.0,
   "risk_pct": 0.01,
-  "next_id": 3,
+  "next_id": 4,
   "proposals": [
     {
       "id": 1,
@@ -33,6 +33,20 @@
       "shares": 44,
       "setup": "Relative strength vs NVDA CEO selloff (reissue of #1, AMD 566.8 at 9:51)",
       "status": "expired_no_reply"
+    },
+    {
+      "id": 3,
+      "date": "2026-11-16",
+      "symbol": "AMD",
+      "side": "BUY",
+      "entry_low": 521,
+      "entry_high": 523,
+      "condition": "void if trades below 517.40 before fill; valid until 11:50 ET",
+      "stop": 517.4,
+      "target": 532.0,
+      "shares": 47,
+      "setup": "Failed-breakdown reclaim: flushed to 502.22 (support 502.50), reclaimed Fri low 520 on 3.4M shares in 10 min",
+      "status": "awaiting_reply"
     }
   ],
   "positions": [],
