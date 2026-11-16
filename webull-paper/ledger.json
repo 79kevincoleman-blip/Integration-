@@ -46,7 +46,7 @@
       "target": 532.0,
       "shares": 47,
       "setup": "Failed-breakdown reclaim: flushed to 502.22 (support 502.50), reclaimed Fri low 520 on 3.4M shares in 10 min",
-      "status": "awaiting_reply"
+      "status": "expired_no_reply"
     }
   ],
   "positions": [],

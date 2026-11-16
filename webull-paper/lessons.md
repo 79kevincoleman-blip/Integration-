@@ -6,3 +6,6 @@
 
 ## 2026-11-13
 - Watchlist condition (AMD hold >575 and break 594) kept the book out of a -8.8% day. Conditional entries > predictions.
+
+## 2026-11-16
+- AMD reclaim of 520 failed within 5 minutes after a 9:46 "US tightens AI chip export rules" headline. Rule added: a fresh sector-negative headline in the 15 min before entry voids the long setup.

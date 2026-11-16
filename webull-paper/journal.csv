@@ -5,3 +5,4 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-13,-,AMD,watchlist,-,-,-,0,Needed hold >575 and break 594; opened 566.8 and fell to 526 (-10%),,skipped (condition failed),0,0,Watchlist trigger kept us out of a -10% day
 2026-11-13,-,AMD,watchlist,-,-,-,0,At day low 522 below VWAP 538; downtrend no reclaim,,skipped,0,0,No catching falling knives
 2026-11-13,-,AMD,watchlist,-,-,-,0,527 below VWAP 539; weak bounce off 520 low,,skipped,0,0,No reclaim of VWAP
+2026-11-16,3-shadow,AMD,failed-breakdown reclaim,522.01,517.40,532,47,Hypothetical if confirmed at 9:51,517.39,stopped 9:55 bar (low 515.69) (hypothetical),-217,-1.0,Reclaim failed within 5 min after export-rule headline; fresh negative news on the sector should void a long setup
