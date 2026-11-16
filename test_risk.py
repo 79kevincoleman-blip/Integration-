@@ -28,3 +28,11 @@ def test_guard():
     except SystemExit:
         pass
     del os.environ["ALPACA_BASE_URL"]
+
+def test_no_market_orders_or_open_buys():
+    assert not buy_order_allowed("MARKET", 11, 0, None, 10)
+    assert not buy_order_allowed("LIMIT", 9, 35, 9.0, 10)      # first 30 min
+    assert not buy_order_allowed("LIMIT", 11, 0, 9.9, 10)      # not a low point
+    assert buy_order_allowed("LIMIT", 11, 0, 9.7, 10)          # 3% pullback
+    assert buy_order_allowed("LIMIT", 11, 0, 9.9, 10, vwap=9.95)
+    assert buy_order_allowed("LIMIT", 11, 0, 9.9, 10, support=9.9)

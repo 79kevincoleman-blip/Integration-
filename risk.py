@@ -32,3 +32,22 @@ def shares_to_buy(price, stop_pct, open_positions, cash, high_conviction_dip=Fal
 
 def should_pause(equity_virtual):
     return equity_virtual <= VIRTUAL_CAPITAL * (1 - PAUSE_DRAWDOWN_PCT)
+
+
+NO_BUY_UNTIL_ET = (10, 0)      # no buys before 10:00 AM ET
+MIN_PULLBACK_PCT = 0.03        # limit must be >= 3% under last price, unless at/below VWAP or support
+
+
+def buy_order_allowed(order_type, et_hour, et_minute, limit_price, last_price,
+                      vwap=None, support=None):
+    """Rules 10-11: limit orders only, not in the first 30 min, and only at a low point."""
+    if order_type.upper() != "LIMIT" or limit_price is None:
+        return False
+    if (et_hour, et_minute) < NO_BUY_UNTIL_ET:
+        return False
+    at_low = limit_price <= last_price * (1 - MIN_PULLBACK_PCT)
+    if vwap is not None and limit_price <= vwap:
+        at_low = True
+    if support is not None and limit_price <= support:
+        at_low = True
+    return at_low

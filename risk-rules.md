@@ -8,3 +8,5 @@
 7. Pause-and-review at -30% of the starting $5,000: stop trading, write what went wrong.
 8. Before each trade: read journal.csv; skip or shrink setups similar to past losers.
 9. Do not chase: skip a stock that has already spiked more than ~10% today without a pullback.
+10. LIMIT orders only. Never a market order, and never buy in the first 30 minutes after the open (9:30-10:00 AM ET).
+11. Buy at a low point, not at the open: place the limit at or below a pullback level - the day's VWAP, a recent support level / prior day's low, or at least 3% under the current price. If it does not reach that price, there is no trade.
