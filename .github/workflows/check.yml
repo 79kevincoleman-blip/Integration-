@@ -10,8 +10,8 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: python -m pytest -q tests
-      - run: python bot/check_account.py
+      - run: python -m pytest -q test_risk.py
+      - run: python check_account.py
         env:
           ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
           ALPACA_SECRET: ${{ secrets.ALPACA_SECRET }}
