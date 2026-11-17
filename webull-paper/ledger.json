@@ -4,7 +4,7 @@
   "equity_high": 100000.0,
   "day_start_equity": 100000.0,
   "risk_pct": 0.01,
-  "next_id": 4,
+  "next_id": 5,
   "proposals": [
     {
       "id": 1,
@@ -47,6 +47,24 @@
       "shares": 47,
       "setup": "Failed-breakdown reclaim: flushed to 502.22 (support 502.50), reclaimed Fri low 520 on 3.4M shares in 10 min",
       "status": "expired_no_reply"
+    },
+    {
+      "id": 4,
+      "date": "2026-11-17",
+      "symbol": "SH (tracked as -1x SPY)",
+      "theme": "index-inverse",
+      "side": "BUY",
+      "entry_spy_zone": [
+        735,
+        742
+      ],
+      "stop_spy": 757.0,
+      "target_spy": 700.0,
+      "units": 27,
+      "setup": "Downtrend via inverse ETF: SPY 738 < 20d 756 < 50d 763; Nov 11 bounce failed at 759.8 near 20d MA",
+      "note": "NVDA earnings after close today: gap risk both ways",
+      "status": "awaiting_reply",
+      "expires": "15:30 ET"
     }
   ],
   "positions": [],
