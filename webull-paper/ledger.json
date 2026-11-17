@@ -63,7 +63,7 @@
       "units": 27,
       "setup": "Downtrend via inverse ETF: SPY 738 < 20d 756 < 50d 763; Nov 11 bounce failed at 759.8 near 20d MA",
       "note": "NVDA earnings after close today: gap risk both ways",
-      "status": "awaiting_reply",
+      "status": "expired_no_reply",
       "expires": "15:30 ET"
     }
   ],
