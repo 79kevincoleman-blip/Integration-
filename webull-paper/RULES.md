@@ -3,11 +3,11 @@
 v1 (intraday day trading) retired: owner can't approve trades within minutes during work hours,
 so 3 proposals in 4 days all expired. v2 holds positions 2-10 days so one approval per day is enough.
 
-## Approval flow
-- One pre-market alert (~8:20 ET) with up to 2 proposals. Each is good for the whole trading day.
-- Owner replies **Y** / **N** (or `Y 1`, `N 2`) any time before 3:30 ET. No reply = expires at 3:30.
-- On Y the order is a limit buy, filled only if price trades inside the entry zone that day.
-- The protective stop and target are part of the approved trade: exits happen without asking.
+## Approval flow — AUTO (owner switched on 2026-11-17)
+- No approval needed for paper trades. I enter setups that meet these rules and report after.
+- Entries: limit orders placed at the 8:17 scan, filled if price trades inside the entry zone that day; unfilled orders cancel at 3:47.
+- Every fill and every exit gets a push notification and a chat note with the reason.
+- Real-account trades are NOT automatic: those still go to the owner as Webull confirmations, and only after the 30-trade scorecard passes.
 
 ## Risk (hard limits)
 1. Risk per trade = 1% of equity: shares = equity*1% / (entry - stop).

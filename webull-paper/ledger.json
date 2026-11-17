@@ -69,5 +69,6 @@
   ],
   "positions": [],
   "closed": [],
-  "version": "v2-swing"
+  "version": "v2-swing",
+  "mode": "auto"
 }
