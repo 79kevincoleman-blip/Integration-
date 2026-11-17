@@ -9,3 +9,6 @@
 
 ## 2026-11-16
 - AMD reclaim of 520 failed within 5 minutes after a 9:46 "US tightens AI chip export rules" headline. Rule added: a fresh sector-negative headline in the 15 min before entry voids the long setup.
+
+## 2026-11-17 — switched to v2 swing
+- v1 intraday: 0 trades in 4 sessions; 3 proposals expired unanswered (hypothetical +0.07R net over 2). Approval latency made intraday impossible. v2 holds 2-10 days with one approval per day.

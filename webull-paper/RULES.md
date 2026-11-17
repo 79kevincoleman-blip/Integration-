@@ -1,33 +1,42 @@
-# Webull Paper Day-Trading Book ($100,000 virtual)
+# Paper Swing-Trading Book ($100,000 virtual) — v2 (from 2026-11-17)
 
-Separate from the Alpaca project. Prices come from live Webull market data; no orders are sent to Webull.
-The ledger (`ledger.json`) is the source of truth. Every decision is logged in `journal.csv`.
+v1 (intraday day trading) retired: owner can't approve trades within minutes during work hours,
+so 3 proposals in 4 days all expired. v2 holds positions 2-10 days so one approval per day is enough.
 
 ## Approval flow
-- Every new entry is a **proposal**: symbol, side, limit entry, stop, target, shares, reason.
-- Owner gets a push alert and replies **Y** (confirm) or **N** (reject). `Y 2` / `N 1` for a specific proposal.
-- No answer before the next check-in = proposal expires. Nothing is traded without a Y.
-- Exits (stop, target, end-of-day flatten) are pre-approved as part of the confirmed trade and run without asking.
+- One pre-market alert (~8:20 ET) with up to 2 proposals. Each is good for the whole trading day.
+- Owner replies **Y** / **N** (or `Y 1`, `N 2`) any time before 3:30 ET. No reply = expires at 3:30.
+- On Y the order is a limit buy, filled only if price trades inside the entry zone that day.
+- The protective stop and target are part of the approved trade: exits happen without asking.
 
 ## Risk (hard limits)
-1. Risk per trade = 1% of equity at proposal time (`(entry - stop) * shares`).
-2. Max position notional 25% of equity. Max 4 open positions. No leverage, no shorting (long stocks only).
-3. Daily loss limit -3% of start-of-day equity: stop proposing for the rest of the day.
-4. Weekly drawdown -6%: halve risk to 0.5% until a new equity high.
-5. Day trading: everything is flat by 15:55 ET. No overnight holds.
-6. Universe: US common stocks, price >= $10, avg daily volume >= 2M, no stocks halted or up >25% without a pullback.
-7. Minimum reward:risk 2:1 to the first target.
+1. Risk per trade = 1% of equity: shares = equity*1% / (entry - stop).
+2. Max position notional 20% of equity. Max 5 open positions. At least 10% cash.
+3. Max 1 open position per theme (e.g. semis, AI infra, energy, banks, biotech, index-inverse).
+4. Inverse ETFs (SQQQ, SOXS, SPXS, SH, PSQ) allowed as "long" positions to profit from falling markets.
+   Leveraged ETFs: max 10% notional, max 5-day hold.
+5. Book drawdown -6% from equity high: risk drops to 0.5% until a new high. -10%: stop and review.
+6. Earnings within the planned hold window: no new entry (exception: inverse/index ETFs).
+7. Minimum reward:risk 2:1 to target.
+8. Fresh sector-negative headline (<15 min before entry) voids a long setup in that sector.
 
-## Fill simulation (conservative)
-- Buy limit fills only if a 5-minute bar after confirmation trades at or below the limit; fill = limit + $0.01.
-- Stop fills at stop - $0.01 (gap through = bar open). Target fills at target.
-- If stop and target both inside the same bar, assume the stop hit first.
-- After +1R, stop moves to breakeven.
+## Exits
+- Stop: below the setup's structure (prior swing low / breakout base), typically 1-2x daily ATR.
+- Target: 2R. At +1R move stop to breakeven.
+- Time stop: exit at the close after 10 trading days if neither stop nor target hit.
+- Daily bars decide fills: stop first if a day's range hits both stop and target (conservative).
 
-## Setups
-- **ORB-VWAP pullback**: gapper with catalyst and RVOL > 2, holds above VWAP after the opening range, buy the pullback to VWAP/ORH, stop below the pullback low.
-- **Relative-strength trend**: stock green while SPY red, higher lows on 5-min, buy the break of the midday range, stop under the range.
-- **Failed-breakdown reclaim**: liquid large cap flushes below a key level then reclaims it on volume, stop under the flush low.
+## Setups (daily charts)
+- **Pullback in uptrend**: price > 50-day MA, 50 > 200, pulls back 3-8% to the 20-day MA or prior breakout, then a green day closes above the prior day's high. Stop under the pullback low.
+- **Base breakout**: 3-6 week tight range (<12% wide), close above the range high on >1.5x avg volume. Stop under the range midpoint.
+- **Downtrend short via inverse ETF**: index/sector below 50-day MA, failed bounce at the 20-day MA. Buy the inverse ETF, stop above the bounce high (in index terms).
+
+## Scorecard (pass/fail after 30 closed trades)
+- Pass: expectancy > +0.2R per trade, max drawdown < 8%, profit factor > 1.3.
+- Pass = start proposing real-account versions (owner confirms each in Webull).
+- Fail = review the rules before continuing.
 
 ## Schedule (ET, weekdays)
-09:50, 11:50, 13:50 scan/manage · 15:50 manage + flatten · 16:17 daily recap.
+- 08:17 pre-market scan + proposals (push alert)
+- 12:47 midday: fill approved orders, manage stops
+- 15:47 close: fill/manage, expire unanswered proposals, daily recap (push)
