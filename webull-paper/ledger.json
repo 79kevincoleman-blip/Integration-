@@ -88,5 +88,6 @@
       "expires": "2026-11-18 15:47",
       "status": "cancelled_unfilled (SPY high 735.06 < 748)"
     }
-  ]
+  ],
+  "venue": "alpaca-paper (6GSX) via GitHub Actions bridge"
 }

@@ -40,3 +40,14 @@ so 3 proposals in 4 days all expired. v2 holds positions 2-10 days so one approv
 - 08:17 pre-market scan + proposals (push alert)
 - 12:47 midday: fill approved orders, manage stops
 - 15:47 close: fill/manage, expire unanswered proposals, daily recap (push)
+
+## Execution venue: Alpaca paper (from 2026-11-18)
+- Orders go to the Alpaca PAPER account (…6GSX) via GitHub Actions (`.github/workflows/alpaca-bridge.yml`),
+  using the repo secrets ALPACA_KEY_ID / ALPACA_SECRET_KEY. Keys never leave GitHub.
+- How: write alpaca/request.json (list of actions), commit, push to this branch; the workflow runs
+  alpaca/bridge.py and prints RESULT lines in the job log, which I read back.
+- Entries are Alpaca **bracket orders** (limit entry + stop-loss + take-profit held at Alpaca), so stops
+  and targets trigger in real time, not at check-ins.
+- Inverse ETFs are real symbols on Alpaca (SH, PSQ, SOXS...). Shorting is also enabled, but rules stay long-only.
+- Alpaca is the source of truth for fills, cash and P&L; ledger.json mirrors it for the scorecard.
+- Paper URL is hard-coded in bridge.py; it cannot reach a live account.
