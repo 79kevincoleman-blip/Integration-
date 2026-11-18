@@ -12,3 +12,6 @@
 
 ## 2026-11-17 — switched to v2 swing
 - v1 intraday: 0 trades in 4 sessions; 3 proposals expired unanswered (hypothetical +0.07R net over 2). Approval latency made intraday impossible. v2 holds 2-10 days with one approval per day.
+
+## 2026-11-18
+- NVDA beat faded: SMH opened 468, closed ~458; SPY never bounced (high 735 vs 748 trigger). In a strong downtrend, waiting for a bounce into the 20d can miss the move. Add alternative trigger: continuation entry on a break of the prior day low.

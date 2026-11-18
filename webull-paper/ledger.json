@@ -86,7 +86,7 @@
       "risk_usd": "~240",
       "setup": "Downtrend via inverse ETF: SPY < 20d(756) < 50d(763). Wait for relief bounce into 20d after NVDA beat, then fade.",
       "expires": "2026-11-18 15:47",
-      "status": "working"
+      "status": "cancelled_unfilled (SPY high 735.06 < 748)"
     }
   ]
 }
