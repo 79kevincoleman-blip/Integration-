@@ -10,7 +10,8 @@ DATA = "https://data.alpaca.markets"
 
 
 def call(base, method, path, body=None):
-    key, sec = os.environ.get("ALPACA_KEY_ID"), os.environ.get("ALPACA_SECRET_KEY")
+    key = (os.environ.get("ALPACA_KEY_ID") or "").strip()
+    sec = (os.environ.get("ALPACA_SECRET_KEY") or "").strip()
     if not key or not sec:
         raise SystemExit("missing ALPACA_KEY_ID / ALPACA_SECRET_KEY secrets")
     req = urllib.request.Request(base + path, method=method,

@@ -17,4 +17,4 @@ jobs:
       - run: python alpaca/bridge.py alpaca/request.json
         env:
           ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
-          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || secrets.ALPACA_SECRET || secrets.ALPACA_SECRET_KEY_ID }}
