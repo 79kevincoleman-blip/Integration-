@@ -4,7 +4,7 @@
   "equity_high": 100000.0,
   "day_start_equity": 100000.0,
   "risk_pct": 0.01,
-  "next_id": 5,
+  "next_id": 6,
   "proposals": [
     {
       "id": 1,
@@ -70,5 +70,23 @@
   "positions": [],
   "closed": [],
   "version": "v2-swing",
-  "mode": "auto"
+  "mode": "auto",
+  "orders": [
+    {
+      "id": 5,
+      "placed": "2026-11-18 08:25",
+      "symbol": "SH",
+      "theme": "index-inverse",
+      "trigger": "SPY trades 748-755 (bounce into 20d MA 756)",
+      "entry_ref_spy": 752.0,
+      "stop_spy": 761.0,
+      "target_spy": 734.0,
+      "sh_shares": 600,
+      "notional_usd": "~20000",
+      "risk_usd": "~240",
+      "setup": "Downtrend via inverse ETF: SPY < 20d(756) < 50d(763). Wait for relief bounce into 20d after NVDA beat, then fade.",
+      "expires": "2026-11-18 15:47",
+      "status": "working"
+    }
+  ]
 }
