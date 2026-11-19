@@ -1,1 +1,1 @@
-{"years": 3, "setups": ["reversal"], "nonce": "2026-11-19-reversal-trial"}
+{"script": "backtest_v3.py", "years": "3,6", "nonce": "2026-11-19-v3"}
