@@ -1,0 +1,7 @@
+{"run":"https://github.com/79kevincoleman-blip/Integration-/actions/runs/44635055402","period":"2016-11-21 to 2026-11-18","halves_split":"2021-11-17",
+"SPY":{"full":{"return_pct":286.7,"cagr_pct":14.53,"max_dd_pct":33.8,"sharpe":0.85},"first_half":{"return_pct":131.9},"second_half":{"return_pct":66.8}},
+"v4_1":{"full":{"return_pct":34.7,"cagr_pct":3.04,"max_dd_pct":8.4,"sharpe":0.79,"trades":94,"win_rate":0.468,"avg_r":0.062,"avg_r_95ci":[-0.204,0.329],"profit_factor":1.12},
+"first_half":{"return_pct":3.1,"max_dd_pct":8.4,"trades":46,"avg_r":-0.042,"profit_factor":0.92},
+"second_half":{"return_pct":30.7,"max_dd_pct":4.8,"trades":48,"avg_r":0.162,"profit_factor":1.33}},
+"dollars_on_100k":{"bot":134700,"spy_buy_hold":386700},
+"verdict":"10y: FAIL 3/4 checks (only DD below SPY). Bot +34.7% vs SPY +286.7%. Edge absent 2016-21 (-0.04R/trade), present only 2021-26. The 6y result overstated it."}
