@@ -31,6 +31,8 @@ No written stop and target = automatic NO-GO.
 - Inside the universe the setup is: downtrend, then a confirmed reversal (webull_strategy.py):
   near the downtrend low + at least 1 signal (close above prior high, RSI back above 30, up day
   on 1.5x volume), or a takeoff (higher low + break of the bounce high on volume). No signal = no trade.
+- **Backtest 2026-11-19 (paper bot, 3y, liquid names): FAILED** - 233 trades, 36% win, -0.05R per trade,
+  -8.6% vs SPY +65.5%. This setup cannot go live. A new setup must pass the paper bot's backtest first.
 
 ## 5. Paper first
 - No live setup until the Alpaca paper bot has 30+ CLOSED trades of that setup with positive
