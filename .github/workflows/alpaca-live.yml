@@ -1,0 +1,27 @@
+name: Alpaca paper bot LIVE (v4.1)
+on:
+  # Fully automatic daily run, 8:40 ET (13:40 UTC; 12:40 UTC in summer would be 8:40 EDT - GitHub cron is UTC).
+  # NOTE: GitHub only runs 'schedule' from the repo's default branch (main).
+  schedule:
+    - cron: "40 13 * * 1-5"
+  push:
+    branches: [claude/webull-paper-trading-lvj9ad]
+    paths: [alpaca_paper_bot/live_request.json]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: alpaca-live
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python alpaca_paper_bot/bot/live_v41.py alpaca_paper_bot/live_request.json
+        env:
+          ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || secrets.ALPACA_SECRET }}
