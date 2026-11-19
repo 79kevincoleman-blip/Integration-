@@ -18,11 +18,8 @@ def shares_to_buy(price, stop_pct, open_positions, cash, high_conviction_dip=Fal
     """Return share count (fractional ok) or 0 if any rule blocks the trade."""
     if open_positions >= MAX_POSITIONS:
         return 0.0
-    size_pct = NORMAL_POSITION_PCT
-    if high_conviction_dip and not have_big_position:
-        size_pct = MAX_DIP_POSITION_PCT
-    dollars = VIRTUAL_CAPITAL * size_pct
-    dollars = min(dollars, VIRTUAL_CAPITAL * MAX_RISK_PER_TRADE_PCT / stop_pct)
+    # Size by risk only (rule 1): dollars at risk / stop distance. No % position caps.
+    dollars = VIRTUAL_CAPITAL * MAX_RISK_PER_TRADE_PCT / stop_pct
     spendable = cash - VIRTUAL_CAPITAL * MIN_CASH_PCT
     dollars = min(dollars, spendable)
     if dollars <= 0:

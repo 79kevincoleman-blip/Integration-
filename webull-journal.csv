@@ -1,0 +1,6 @@
+date,type,ticker,side,qty,price,stop,target,risk_usd,fees,pnl_usd,r_multiple,note
+2026-11-12,TRADE,BGSF,BUY,2,3.70,,,,0.00,,,no stop/target written - would be NO-GO (mcap $41M; spread ~11%)
+,TRADE,IMCC,BUY,5,1.216,,,,0.00,,,no stop/target written - would be NO-GO (price < $5; mcap ~$1M)
+2026-11-16,TRADE,IMCC,SELL,5,0.55,1.03,,0.91,0.01,-3.34,-3.65,R measured vs the 15% stop rule (1.03) that was never placed
+,UNEXPLAINED,,,,,,,,,-17.90,,date and reason needed
+,UNEXPLAINED,,,,,,,,,15.68,,date and reason needed

@@ -1,5 +1,5 @@
 # Risk rules (the seatbelt) - the bot cannot override these
-1. Position size: 10-15% of account normally. Up to 30% only for a high-conviction temporary-dip buy, and only ONE 30% position at a time. Scale in: ~1/3 first, add only if it stabilizes.
+1. Size by risk only: shares = (2% of virtual capital) / (entry - stop). (Old 10-15% / 30% caps removed; see risk-sheet.md for the live account.)
 2. Max 8 open positions. Keep at least 10% cash.
 3. Every buy gets a stop immediately: 15% (price under $100), 20% ($100-$1,000), 10% ($1,000+, no news). Stops are sized to the stock's normal daily range (ATR) when that is wider.
 4. Never risk more than ~2% of the account on one trade (shrink the share count to fit).
