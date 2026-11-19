@@ -1,0 +1,7 @@
+{"run":"https://github.com/79kevincoleman-blip/Integration-/actions/runs/44602821871","prereg":"V4_1_PREREGISTRATION.md",
+"SPY":{"full":{"return_pct":121.2,"cagr_pct":14.21,"max_dd_pct":24.5,"sharpe":0.88},"first_half":{"return_pct":31.7,"sharpe":0.61},"second_half":{"return_pct":68.0,"sharpe":1.2}},
+"v4_1":{"full":{"return_pct":40.4,"cagr_pct":5.84,"max_dd_pct":4.8,"sharpe":1.36,"trades":59,"win_rate":0.542,"avg_r":0.293,"avg_r_95ci":[-0.071,0.657],"profit_factor":1.65,"by_exit":{"stop":21,"stop-gap":2,"structure-break":1,"target":5,"target-gap":1,"time":29}},
+"first_half":{"return_pct":17.7,"max_dd_pct":4.8,"sharpe":1.29,"trades":32,"avg_r":0.415,"profit_factor":1.97},
+"second_half":{"return_pct":19.3,"max_dd_pct":4.6,"sharpe":1.43,"trades":27,"avg_r":0.148,"profit_factor":1.31}},
+"prereg_checks":{"avg_r_pos_both_halves":true,"full_ci_low_pos":false,"sharpe_beats_spy":true,"dd_below_spy":true},
+"verdict":"FAIL (3 of 4 checks). Only 59 trades in 6 years, so the 95% CI still includes 0. Best result of all versions: positive both halves, Sharpe 1.36 vs 0.88, max DD 4.8% vs 24.5%. Low exposure: much of the return is T-bill interest on idle cash. Half of exits are the 20-day time limit."}

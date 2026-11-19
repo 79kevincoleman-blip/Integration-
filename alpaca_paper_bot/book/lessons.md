@@ -27,3 +27,6 @@
 
 ## 2026-11-19 — v4 (owner momentum outline)
 - 4 variants, 6y: all fail (best +30% vs +121%). Pullbacks lose in every version; high-volume breakouts make money in every version. 41% of exits were the close-below-20d rule, probably too tight for "days to weeks" trends.
+
+## 2026-11-19 — v4.1 (pre-registered breakout-only)
+- First version with positive results in both halves and far smaller drawdown (4.8%) than SPY (24.5%). Failed only the statistical-certainty check: 59 trades is too few. Most money sat in T-bills, so raw return is low (+40% vs +121%).
