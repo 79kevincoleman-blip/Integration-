@@ -1,0 +1,8 @@
+{"run":"https://github.com/79kevincoleman-blip/Integration-/actions/runs/44598061351","data_feed":"sip","period":"2020-11-19 to 2026-11-18 (halves split 2023-11-17)",
+"SPY":{"full":121.2,"first_half":31.7,"second_half":68.0,"max_dd":24.5},
+"v4_2R":{"return":[10.1,7.1,2.8],"max_dd":18.2,"trades":403,"win":0.33,"avg_r":-0.052,"pf":0.9,"pullback_r":-0.09,"breakout_r":0.202,"breakout_r_halves":[0.244,0.146]},
+"v4_3R":{"return":[30.1,16.1,12.0],"max_dd":19.4,"trades":383,"win":0.332,"avg_r":-0.002,"pf":1.0,"pullback_r":-0.031,"breakout_r":0.188,"breakout_r_halves":[0.304,0.023]},
+"v4_2R_regime":{"return":[2.0,-1.0,3.0],"max_dd":18.2,"trades":362,"avg_r":-0.069,"pullback_r":-0.093,"breakout_r":0.11},
+"v4_3R_regime":{"return":[26.0,11.1,13.4],"max_dd":19.4,"trades":343,"avg_r":-0.002,"pullback_r":-0.015,"breakout_r":0.089},
+"exits_v4_2R":{"structure-break":167,"stop":115,"target":72,"stop-gap":22,"time":20,"target-gap":7},
+"verdict":"FAIL all 4. Best +30% vs SPY +121%, DD 19% (worse than v2.1). Pullbacks lose in every variant; breakouts positive in every variant (+0.09..+0.20R) — the only consistent signal so far, but a post-hoc observation. Close<20d 'structure break' is the most common exit (41%) and likely cuts trades too early."}

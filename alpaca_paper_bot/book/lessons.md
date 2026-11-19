@@ -24,3 +24,6 @@
 
 ## 2026-11-19 — v2.1 repair attempt
 - Regime filter + momentum ranking + trailing exits + T-bill cash: worked in 2020-23 (near SPY, far smaller drawdown), failed in 2023-26 (+1.5% vs +68%). A fix that only works in one half is luck, not an edge. 13% of trades gapped through stops.
+
+## 2026-11-19 — v4 (owner momentum outline)
+- 4 variants, 6y: all fail (best +30% vs +121%). Pullbacks lose in every version; high-volume breakouts make money in every version. 41% of exits were the close-below-20d rule, probably too tight for "days to weeks" trends.
