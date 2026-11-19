@@ -30,10 +30,11 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - 11-19 30-trade pass/fail judged too noisy (SE ~0.27R). New bar: backtest beats SPY after costs with
   expectancy CI > 0, live paper consistent with backtest, max DD < 8%.
 
-## Scheduled tasks (Claude remote triggers, this session)
-- trig_01NriUq2ctyew3WhxAKn6pkZ  08:17 ET weekdays  pre-market scan + bracket orders
-- trig_01GLVo6nSf2d7TTHa93fPb2R  12:47 ET weekdays  midday sync
-- trig_01T7CadfzyK4SWSSReYDM6Ws  15:47 ET weekdays  close + recap
+## Scheduled tasks (Claude remote triggers, this session; weekdays ET, from 2026-11-20)
+- trig_01NriUq2ctyew3WhxAKn6pkZ  08:15  live v4.1 run (orders + exits) via live_request.json
+- trig_01GLVo6nSf2d7TTHa93fPb2R  11:15  fills/positions check (read-only)
+- trig_01DjiAsqLDt66HZYq2QgYJDQ  13:00  fills/positions check (read-only)
+- trig_01T7CadfzyK4SWSSReYDM6Ws  16:00  close recap + push
 
 - 11-19 Owner added a TEMPORARY reversal-setup trial (from the Webull risk-sheet work on branch
   claude/webull-real-trading-memory-49sdaz). Backtest decides whether it gets paper entries.
