@@ -11,6 +11,9 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Mode: AUTO on paper (owner said "Auto" 2026-11-17). Venue: Alpaca paper via GitHub Actions bridge.
 - Equity $100,000, 0 positions, 0 closed trades as of 2026-11-18 close.
 - Backtest v2 (2026-11-19, 3y, 368 trades): FAIL. +0.031R/trade (95% CI -0.08..+0.14), +6.0% total vs SPY +66.7%, max DD 9.7%.
+- 11-19: owner TEMPORARILY added the Webull "downtrend reversal" setup (RULES.md) as a paper trial.
+  Backtest of reversal alone requested (backtest/request.json setups=["reversal"]). Paper entries on it
+  only if it passes; remove it if it fails. Universe extended with RIVN, F, NU, SOFI, PYPL, SNAP, DIS, INTC, PFE.
 - NEW ENTRIES PAUSED per RULES.md (fail = review before continuing). Scheduled tasks only sync/report until owner approves a v3.
 
 ## Decision log
@@ -25,6 +28,9 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - trig_01NriUq2ctyew3WhxAKn6pkZ  08:17 ET weekdays  pre-market scan + bracket orders
 - trig_01GLVo6nSf2d7TTHa93fPb2R  12:47 ET weekdays  midday sync
 - trig_01T7CadfzyK4SWSSReYDM6Ws  15:47 ET weekdays  close + recap
+
+- 11-19 Owner added a TEMPORARY reversal-setup trial (from the Webull risk-sheet work on branch
+  claude/webull-real-trading-memory-49sdaz). Backtest decides whether it gets paper entries.
 
 ## Gotchas
 - Webull MCP disconnects often; fall back to Alpaca 'bars' via bridge, then FMP (FMP free plan blocks most ETFs).

@@ -11,20 +11,23 @@ from datetime import date, timedelta
 
 UNIVERSE = {
     # theme: symbols
-    "semis": ["NVDA", "AMD", "AVGO", "MU", "QCOM"],
+    "semis": ["NVDA", "AMD", "AVGO", "MU", "QCOM", "INTC"],
     "megatech": ["AAPL", "MSFT", "GOOGL", "AMZN", "META"],
     "software": ["CRM", "ORCL", "ADBE", "NOW"],
     "banks": ["JPM", "BAC", "GS", "WFC"],
     "energy": ["XOM", "CVX", "COP", "SLB"],
-    "health": ["UNH", "LLY", "JNJ", "ABBV"],
+    "health": ["UNH", "LLY", "JNJ", "ABBV", "PFE"],
     "industrial": ["CAT", "GE", "HON", "DE"],
     "consumer": ["COST", "WMT", "HD", "MCD", "NKE"],
-    "auto_ev": ["TSLA"],
+    "auto_ev": ["TSLA", "RIVN", "F"],
+    "fintech": ["NU", "SOFI", "PYPL"],
+    "media": ["SNAP", "DIS"],
     "index-inverse": ["SH", "PSQ"],
 }
 LEVERAGED = {"SOXS", "SQQQ", "SPXS"}
 BENCH = "SPY"
 SLIP = 0.0005
+SETUPS = {"pullback", "base-breakout", "inverse-breakdown", "reversal"}  # overridden by request.json "setups"
 RISK, CAP, CAP_LEV, CASH_FLOOR, MAX_POS, RR, TIME_STOP = 0.01, 0.20, 0.10, 0.10, 5, 2.0, 10
 
 
@@ -84,6 +87,41 @@ def atr(bars, n, i):
     return sum(trs) / n
 
 
+def rsi(c, n, i):
+    if i < n:
+        return None
+    g = sum(max(c[k] - c[k - 1], 0) for k in range(i - n + 1, i + 1))
+    l = sum(max(c[k - 1] - c[k], 0) for k in range(i - n + 1, i + 1))
+    return 100.0 if l == 0 else 100 - 100 / (1 + g / l)
+
+
+def reversal(b, i, s50, a):
+    """TEMPORARY trial (owner, 2026-11-19): downtrend -> lowest low -> confirmed reversal.
+    Liquid universe only (price > $5). Mirrors webull_strategy.py on the Webull branch."""
+    c = [x["c"] for x in b]
+    bar, prev = b[i], b[i - 1]
+    if c[i] <= 5 or a is None:
+        return None
+    hi60 = max(x["h"] for x in b[i - 60:i])
+    lo60 = min(x["l"] for x in b[i - 60:i + 1])
+    if not (prev["c"] < s50 and (hi60 - lo60) / hi60 >= 0.15):   # was in a downtrend, 15%+ off the high
+        return None
+    vavg = sum(x["v"] for x in b[i - 50:i]) / 50
+    sig = c[i] > prev["h"] or (rsi(c, 14, i - 1) or 50) < 30 <= (rsi(c, 14, i) or 50) \
+        or (c[i] > prev["c"] and bar["v"] >= 1.5 * vavg)
+    if c[i] <= lo60 * 1.03 and sig:                              # A: at the lowest low + 1 signal
+        return ("reversal", lo60 - 0.1 * a)
+    w = b[i - 20:i + 1]
+    k = min(range(len(w)), key=lambda j: w[j]["l"])
+    after = w[k + 1:-1]
+    if len(after) >= 3:                                          # B: takeoff
+        bounce = max(x["h"] for x in after)
+        hl = min(x["l"] for x in after)
+        if hl > w[k]["l"] and c[i] > bounce and bar["v"] >= 1.5 * vavg:
+            return ("reversal", hl - 0.1 * a)
+    return None
+
+
 # ---------------- signals (evaluated at close of bar i) ----------------
 def signal(sym, theme, b, i, spy, spy_i):
     c = [x["c"] for x in b]
@@ -97,23 +135,23 @@ def signal(sym, theme, b, i, spy, spy_i):
         sc = [x["c"] for x in spy]
         spy20, spy50 = sma(sc, 20, spy_i), sma(sc, 50, spy_i)
         # market downtrend + SPY breaks prior-day low  => inverse ETF breaks prior-day high
-        if sc[spy_i] < spy20 < spy50 and spy[spy_i]["l"] < spy[spy_i - 1]["l"] and bar["c"] > prev["h"]:
+        if "inverse-breakdown" in SETUPS and sc[spy_i] < spy20 < spy50 and spy[spy_i]["l"] < spy[spy_i - 1]["l"] and bar["c"] > prev["h"]:
             stop = min(x["l"] for x in b[i - 4:i + 1]) - 0.1 * a
             return ("inverse-breakdown", stop)
         return None
     if not (c[i] > s50 > s200):
-        return None
+        return reversal(b, i, s50, a) if "reversal" in SETUPS else None
     hi20 = max(x["h"] for x in b[i - 20:i])
     lo20 = min(x["l"] for x in b[i - 20:i])
     # base breakout
     width = (hi20 - lo20) / lo20
     vavg = sum(x["v"] for x in b[i - 50:i]) / 50
-    if width < 0.12 and c[i] > hi20 and bar["v"] > 1.5 * vavg:
+    if "base-breakout" in SETUPS and width < 0.12 and c[i] > hi20 and bar["v"] > 1.5 * vavg:
         return ("base-breakout", (hi20 + lo20) / 2)
     # pullback in uptrend: pulled back 3-8% from 20d high, touched near the 20d MA, green day closing above prior high
     recent_low = min(x["l"] for x in b[i - 4:i + 1])
     dd = (hi20 - recent_low) / hi20
-    if 0.03 <= dd <= 0.08 and recent_low <= s20 * 1.01 and c[i] > bar["o"] and c[i] > prev["h"]:
+    if "pullback" in SETUPS and 0.03 <= dd <= 0.08 and recent_low <= s20 * 1.01 and c[i] > bar["o"] and c[i] > prev["h"]:
         return ("pullback", recent_low - 0.1 * a)
     return None
 
@@ -243,7 +281,13 @@ if __name__ == "__main__":
     ap.add_argument("--years", type=float, default=3)
     ap.add_argument("--csv-dir")
     ap.add_argument("--out", default="backtest_out")
+    ap.add_argument("--request", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "request.json"))
     a = ap.parse_args()
+    if os.path.exists(a.request):
+        req = json.load(open(a.request))
+        if req.get("setups"):
+            SETUPS = set(req["setups"])
+    print(f"setups: {sorted(SETUPS)}", file=sys.stderr)
     syms = sorted({s for ss in UNIVERSE.values() for s in ss} | {BENCH})
     end = date.today()
     trade_start = end - timedelta(days=int(a.years * 365))

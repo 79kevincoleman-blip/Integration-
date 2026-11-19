@@ -31,6 +31,16 @@ so 3 proposals in 4 days all expired. v2 holds positions 2-10 days so one approv
 - **Base breakout**: 3-6 week tight range (<12% wide), close above the range high on >1.5x avg volume. Stop under the range midpoint.
 - **Downtrend short via inverse ETF**: index/sector below 50-day MA, failed bounce at the 20-day MA. Buy the inverse ETF, stop above the bounce high (in index terms).
 
+- **Downtrend reversal — TEMPORARY TRIAL (owner request 2026-11-19)**: liquid names only (price > $5,
+  cap > $1B, spread < 0.5%). Stock was below its 50-day MA and 15%+ off its 60-day high. Buy when either
+  (A) the close is within 3% of the 60-day low AND 1 signal fires (close above prior high, RSI(14) back
+  above 30, or an up day on 1.5x volume), or (B) takeoff: a higher low after the 20-day low, then a close
+  above the bounce high on 1.5x volume. Stop just under the low (A: 60-day low, B: the higher low).
+  Same 1% risk, 2R target, breakeven at +1R, 10-day time stop.
+  Trial status: backtest first. No paper entries on this setup until the backtest passes the bar below.
+  Purpose: build the 30+ closed paper trades the Webull risk-sheet.md requires before any live use.
+  Remove the setup if the backtest fails.
+
 ## Scorecard
 **Status 2026-11-19: v2 FAILED backtest — new entries paused pending v3.**
 Pass bar (all required): backtest beats SPY after costs with expectancy 95% CI > 0; live paper consistent with backtest; max DD < 8%.
