@@ -21,3 +21,6 @@
 
 ## 2026-11-19 — reversal trial
 - Webull "downtrend -> lowest low -> reversal" setup on 3y of liquid names: 233 trades, 36% win, -0.05R, -8.6% vs SPY +65.5%. Buying the bottom of downtrends loses even in liquid stocks; the IMCC/BGSF losses were the strategy, not just the stock picks. Disabled.
+
+## 2026-11-19 — v2.1 repair attempt
+- Regime filter + momentum ranking + trailing exits + T-bill cash: worked in 2020-23 (near SPY, far smaller drawdown), failed in 2023-26 (+1.5% vs +68%). A fix that only works in one half is luck, not an edge. 13% of trades gapped through stops.
