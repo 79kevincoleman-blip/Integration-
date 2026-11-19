@@ -1,1 +1,1 @@
-[{"action": "account", "nonce": "2026-11-18-second-check"}, {"action": "positions"}]
+[{"action":"account","nonce":"2026-11-19-premarket"},{"action":"positions"},{"action":"orders","status":"all"}]
