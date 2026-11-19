@@ -1,0 +1,24 @@
+name: Alpaca paper bot backtest
+on:
+  push:
+    branches: [claude/webull-paper-trading-lvj9ad]
+    paths: [alpaca_paper_bot/backtest/request.json, alpaca_paper_bot/backtest/backtest.py]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python alpaca_paper_bot/backtest/backtest.py --years "$(python -c "import json;print(json.load(open('alpaca_paper_bot/backtest/request.json'))['years'])")" --out out
+        env:
+          ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || secrets.ALPACA_SECRET }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backtest-results
+          path: out/

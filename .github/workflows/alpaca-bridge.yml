@@ -2,7 +2,7 @@ name: Alpaca paper bridge
 on:
   push:
     branches: [claude/webull-paper-trading-lvj9ad]
-    paths: [alpaca/request.json]
+    paths: [alpaca_paper_bot/bridge_request.json]
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python alpaca/bridge.py alpaca/request.json
+      - run: python alpaca_paper_bot/bot/bridge.py alpaca_paper_bot/bridge_request.json
         env:
           ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
-          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || secrets.ALPACA_SECRET || secrets.ALPACA_SECRET_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || secrets.ALPACA_SECRET }}

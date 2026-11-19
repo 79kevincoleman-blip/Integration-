@@ -1,6 +1,6 @@
 """Alpaca PAPER bridge, run by GitHub Actions with repo secrets.
 
-Reads alpaca/request.json, calls the Alpaca paper API, prints one JSON result line.
+Reads alpaca_paper_bot/bridge_request.json, calls the Alpaca paper API, prints one JSON result line.
 Paper URL is hard-coded; anything else is refused. Keys come only from env vars.
 """
 import json, os, sys, urllib.request, urllib.error
@@ -61,7 +61,7 @@ def run(req):
 
 
 if __name__ == "__main__":
-    reqs = json.load(open(sys.argv[1] if len(sys.argv) > 1 else "alpaca/request.json"))
+    reqs = json.load(open(sys.argv[1] if len(sys.argv) > 1 else "alpaca_paper_bot/bridge_request.json"))
     for r in reqs if isinstance(reqs, list) else [reqs]:
         status, result = run(r)
         print("RESULT " + json.dumps({"request": r, "http": status, "result": result}))

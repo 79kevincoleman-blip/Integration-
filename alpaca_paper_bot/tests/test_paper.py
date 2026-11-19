@@ -1,3 +1,4 @@
+import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "bot"))
 from paper import size, step_day, risk_pct, can_propose, scorecard
 
 

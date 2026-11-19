@@ -2,7 +2,7 @@
 import json, sys
 from pathlib import Path
 
-LEDGER = Path(__file__).with_name("ledger.json")
+LEDGER = Path(__file__).resolve().parent.parent / "book" / "ledger.json"
 MAX_POS = 5
 MAX_NOTIONAL_PCT = 0.20
 MAX_LEVERAGED_PCT = 0.10
