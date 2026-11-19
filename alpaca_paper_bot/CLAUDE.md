@@ -18,7 +18,9 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Backtest v2.1 (2026-11-19, 6y, 283 trades): FAIL. +30% vs SPY +121%. 2020-23 ~SPY with DD 9.9% vs 24.5%; 2023-26 +1.5% vs SPY +68%. Not re-tuned (overfitting risk).
 - Backtest v4 (owner outline: RS momentum pullbacks/breakouts, R-multiple or structure exits; 2026-11-19, 6y): FAIL all 4 variants; best +30% vs SPY +121%. Pullbacks negative everywhere; breakouts positive everywhere (+0.09..+0.20R). Candidate next test: breakout-only (pre-declared, post-hoc idea).
 - Backtest v4.1 PRE-REGISTERED (breakout-only, 3R, close<50d, 20d max): FAIL 3/4 checks (CI lower -0.07; only 59 trades/6y). +40% vs SPY +121%, Sharpe 1.36 vs 0.88, DD 4.8% vs 24.5%, positive both halves. Best so far. Per prereg: no more variants; owner to decide whether to paper-trade the frozen rules for more data.
-- NEW ENTRIES PAUSED per RULES.md (fail = review before continuing). Scheduled tasks only sync/report until owner approves a v3.
+- 2026-11-19: owner said 'Let alpaca be fully automated'. v4.1 LIVE on Alpaca paper via bot/live_v41.py + alpaca-live.yml.
+  Dry run OK (RS top10 WMT COST DIS AAPL META AMD LLY TSLA ABBV XLP; no signals). Mock tests of entry/exit paths OK.
+  Daily run is triggered by the 08:17 ET Claude task pushing live_request.json (cron in the workflow only works once on main).
 
 ## Decision log
 - 11-12 v1 intraday day trading on a Webull-priced simulated book; Webull orders need owner tap in app.

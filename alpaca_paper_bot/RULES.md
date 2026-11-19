@@ -1,3 +1,17 @@
+# ACTIVE STRATEGY: v4.1 LIVE on Alpaca paper (from 2026-11-19, owner: "Let alpaca be fully automated")
+Frozen rules: backtest/V4_1_PREREGISTRATION.md. Code: bot/live_v41.py. Workflow: .github/workflows/alpaca-live.yml.
+- Fully automatic, no approvals. One run per trading day before the open.
+- Scan: 63-day relative strength vs SPY > 0, top 10, close > 50d > 200d (stocks + index/sector ETFs).
+- Entry: high-volume breakout of a 15-30 day base < 12% wide only. Bracket order: limit = prior close + 1%,
+  stop = base midpoint (skip if > 2.5 ATR), take-profit = 3R. Day order; unfilled cancels at the close.
+- Exit: stop/target held at Alpaca (real time); prior close < 50d MA or 20 trading days held -> close at the open.
+- Risk: 1% equity/trade, 20% max position, 5 positions, 2 per theme, 10% cash floor, max 2 new per day.
+- Halt: no new entries while equity is > 10% below its 1-year peak.
+- Purpose: out-of-sample evidence for v4.1 (backtest passed 3/4 checks; too few trades to prove the edge).
+- Everything below this section is history (v2 and earlier), kept for reference.
+
+---
+
 # Paper Swing-Trading Book ($100,000 virtual) — v2 (from 2026-11-17)
 
 v1 (intraday day trading) retired: owner can't approve trades within minutes during work hours,
