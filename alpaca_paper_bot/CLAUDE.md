@@ -14,6 +14,7 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - 11-19: owner TEMPORARILY added the Webull "downtrend reversal" setup (RULES.md) as a paper trial.
   Backtest of reversal alone: FAIL (233 trades, -0.048R, PF 0.9, -8.6% vs SPY +65.5%, DD 12.1%).
   Setup DISABLED (not in default SETUPS); no paper entries. Universe extended with RIVN, F, NU, SOFI, PYPL, SNAP, DIS, INTC, PFE.
+- Backtest v3 trend-following (2026-11-19, 3y+6y, SIP data): no variant beats SPY on return; B (SPY 200d, 2% band, else BIL) cuts DD 24.5%->17% (6y) with similar Sharpe. Awaiting owner decision.
 - NEW ENTRIES PAUSED per RULES.md (fail = review before continuing). Scheduled tasks only sync/report until owner approves a v3.
 
 ## Decision log
