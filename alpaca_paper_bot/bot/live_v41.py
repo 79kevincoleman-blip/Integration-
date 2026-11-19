@@ -8,6 +8,11 @@ Rules are the frozen v4.1 rules (backtest/V4_1_PREREGISTRATION.md), implemented 
           days held -> cancel legs and close at the open
   risk    1% equity per trade, 20% max position, 5 positions, 2 per theme, 10% cash floor, max 2 new per day
   halt    no new entries if equity is 10% below its 1-year peak
+LIVE PRICES (owner, 2026-11-19): decisions use real-time IEX last trades. During market hours today's
+in-progress bar (open/high/low/volume from 15-min-delayed SIP, volume projected to a full day, last = live
+price) is appended before signals and exits are evaluated. Before the open, signals use the prior close,
+but entries are skipped if the live pre-market price is >1% above it, and the limit is set from the live price.
+This differs from the backtest (decide at close, enter next open).
 Stateless: entry dates come from Alpaca order history (client_order_id = v41-SYMBOL-YYYYMMDD).
 Paper URL is hard-coded. Keys come only from env vars (GitHub secrets).
 """
@@ -21,6 +26,7 @@ import backtest_v4 as v4  # noqa: E402
 PAPER = "https://paper-api.alpaca.markets"
 DATA = "https://data.alpaca.markets"
 R_MULT, STRUCT_MA, MAX_HOLD, MAX_NEW, MAX_GAP, HALT_DD = 3.0, 50, 20, 2, 0.01, 0.10
+LIMIT_SLACK = 0.003  # buy limit = live price + 0.3%
 TAG = "v41"
 
 
@@ -39,6 +45,51 @@ def api(base, method, path, body=None):
             return r.status, (json.loads(t) if t else None)
     except urllib.error.HTTPError as e:
         return e.code, e.read().decode()[:400]
+
+
+def live_prices(syms):
+    """Real-time last trade per symbol from Alpaca's free real-time IEX feed."""
+    out = {}
+    for i in range(0, len(syms), 50):
+        chunk = ",".join(syms[i:i + 50])
+        s, j = api(DATA, "GET", f"/v2/stocks/snapshots?symbols={chunk}&feed=iex")
+        if s == 200 and isinstance(j, dict):
+            for sym, snap in j.items():
+                t = (snap or {}).get("latestTrade") or {}
+                if t.get("p"):
+                    out[sym] = float(t["p"])
+    return out
+
+
+def overlay_today(data, syms, live, today, clock):
+    """During market hours, append today's in-progress bar: open/high/low/volume from full-market SIP data
+    (15-min delayed on the free plan), last price from real-time IEX. Volume is projected to a full day."""
+    end = (datetime.now(timezone.utc) - timedelta(minutes=16)).isoformat(timespec="seconds").replace("+00:00", "Z")
+    q = urllib.parse.urlencode({"symbols": ",".join(syms), "timeframe": "1Day", "start": today, "end": end,
+                                "feed": "sip", "adjustment": "all", "limit": 10000})
+    s, j = api(DATA, "GET", "/v2/stocks/bars?" + q)
+    bars = (j or {}).get("bars", {}) if s == 200 and isinstance(j, dict) else {}
+    now = datetime.now(timezone.utc)
+    opened = now.replace(hour=14, minute=30, second=0, microsecond=0)  # 9:30 ET in winter (EST)
+    if now.month in (4, 5, 6, 7, 8, 9, 10) or (now.month == 3 and now.day > 8) or (now.month == 11 and now.day < 2):
+        opened = opened - timedelta(hours=1)  # rough EDT adjustment
+    frac = min(max((now - opened).total_seconds() / 23400, 0.1), 1.0)
+    for sym in syms:
+        b = data.get(sym)
+        px = live.get(sym)
+        if not b or px is None or b[-1]["d"] == today:
+            continue
+        tb = (bars.get(sym) or [None])[-1]
+        if tb:
+            o, h, l, v = tb["o"], max(tb["h"], px), min(tb["l"], px), tb["v"] / frac
+        else:
+            o, h, l, v = px, px, px, 0
+        b.append({"d": today, "o": o, "h": h, "l": l, "c": px, "v": v})
+
+
+def traded_today(hist, sym, today):
+    tag = f"{TAG}-{sym}-{today.replace('-', '')}"
+    return any((o.get("client_order_id") or "") == tag for o in hist or [])
 
 
 def trading_days_between(cal, d0, d1):
@@ -71,6 +122,15 @@ def main(dry_run):
     data = v4.fetch_alpaca(syms, start, last_session)
     data = {k: sorted(v, key=lambda x: x["d"]) for k, v in data.items() if v}
 
+    # LIVE PRICES (owner 2026-11-19: "get the most up-to-date real time prices before you make a decision")
+    live, mode = live_prices(syms), "pre-market"
+    _, clock = api(PAPER, "GET", "/v2/clock")
+    if isinstance(clock, dict) and clock.get("is_open"):
+        mode = "market-open"
+        overlay_today(data, syms, live, today, clock)
+    log["price_mode"] = mode
+    log["live_prices_found"] = sum(1 for s in syms if s in live)
+
     # entry dates from our filled buy orders
     entry_date = {}
     for o in hist or []:
@@ -88,7 +148,7 @@ def main(dry_run):
         ma = v4.sma(c, STRUCT_MA, len(c) - 1)
         d_in = entry_date.get(sym)
         days_held = trading_days_between(cal, d_in, last_session) if d_in else 0
-        why = "structure-break (close < 50d)" if ma and c[-1] < ma else ("time stop (20 days)" if days_held >= MAX_HOLD else None)
+        why = "structure-break (price < 50d)" if ma and c[-1] < ma else ("time stop (20 days)" if days_held >= MAX_HOLD else None)
         if why:
             act = {"type": "exit", "symbol": sym, "qty": p["qty"], "reason": why, "unrealized_pl": p.get("unrealized_pl")}
             if not dry_run:
@@ -113,7 +173,7 @@ def main(dry_run):
     rs = []
     for sym, theme in v4.NAMES.items():
         b = data.get(sym)
-        if not b or len(b) <= v4.RS_LB or b[-1]["d"] != last_session:
+        if not b or len(b) <= v4.RS_LB or b[-1]["d"] not in (last_session, today):
             continue
         r = b[-1]["c"] / b[-1 - v4.RS_LB]["c"] - 1 - spy_ret
         if r > 0:
@@ -133,9 +193,17 @@ def main(dry_run):
         sig = v4.entry_signal(b, len(b) - 1)
         if not sig or sig[0] != "breakout":
             continue
-        ref = b[-1]["c"]
+        if traded_today(hist, sym, today):
+            continue
+        ref = b[-1]["c"]  # live price when the market is open; prior close before the open
+        px = live.get(sym)
+        if px is not None and px > ref * (1 + MAX_GAP):
+            log["notes"].append(f"{sym}: signal but live price {px:.2f} is >1% above {ref:.2f}; skipped (no chasing)")
+            continue
         stop = round(sig[1], 2)
-        limit = round(ref * (1 + MAX_GAP), 2)
+        limit = round((px if px is not None else ref) * (1 + LIMIT_SLACK), 2)
+        if limit <= stop:
+            continue
         rps = limit - stop
         target = round(limit + R_MULT * rps, 2)
         qty = int(min(equity * v4.RISK / rps, equity * v4.CAP / limit, max(cash - equity * v4.CASH_FLOOR, 0) / limit))

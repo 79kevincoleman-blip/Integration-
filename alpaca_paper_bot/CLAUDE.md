@@ -20,6 +20,10 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Backtest v4.1 PRE-REGISTERED (breakout-only, 3R, close<50d, 20d max): FAIL 3/4 checks (CI lower -0.07; only 59 trades/6y). +40% vs SPY +121%, Sharpe 1.36 vs 0.88, DD 4.8% vs 24.5%, positive both halves. Best so far. Per prereg: no more variants; owner to decide whether to paper-trade the frozen rules for more data.
 - 2026-11-19: owner said 'Let alpaca be fully automated'. v4.1 LIVE on Alpaca paper via bot/live_v41.py + alpaca-live.yml.
   Dry run OK (RS top10 WMT COST DIS AAPL META AMD LLY TSLA ABBV XLP; no signals). Mock tests of entry/exit paths OK.
+  2026-11-19: owner: decide on real-time prices, not prior close. Bot now uses live IEX last trade + today's partial bar
+  (15-min delayed SIP, volume projected) during market hours; pre-market skips >1% gaps, limit = live +0.3%.
+  NOTE: live rules now differ from the backtest (which decided at close, entered next open).
+  Bot trades at 08:15, 11:15, 13:00; 16:00 is recap only.
   Daily run is triggered by the 08:17 ET Claude task pushing live_request.json (cron in the workflow only works once on main).
 
 ## Decision log

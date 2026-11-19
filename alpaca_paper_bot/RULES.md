@@ -7,6 +7,8 @@ Frozen rules: backtest/V4_1_PREREGISTRATION.md. Code: bot/live_v41.py. Workflow:
 - Exit: stop/target held at Alpaca (real time); prior close < 50d MA or 20 trading days held -> close at the open.
 - Risk: 1% equity/trade, 20% max position, 5 positions, 2 per theme, 10% cash floor, max 2 new per day.
 - Halt: no new entries while equity is > 10% below its 1-year peak.
+- LIVE PRICES (owner 2026-11-19): signals and exits use real-time prices; runs at 08:15, 11:15, 13:00 ET.
+  Pre-market: prior-close signal, skip if live price >1% above it. Limit = live price + 0.3%. Differs from backtest.
 - Purpose: out-of-sample evidence for v4.1 (backtest passed 3/4 checks; too few trades to prove the edge).
 - Everything below this section is history (v2 and earlier), kept for reference.
 
