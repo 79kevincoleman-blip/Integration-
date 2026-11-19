@@ -37,7 +37,8 @@ so 3 proposals in 4 days all expired. v2 holds positions 2-10 days so one approv
   above 30, or an up day on 1.5x volume), or (B) takeoff: a higher low after the 20-day low, then a close
   above the bounce high on 1.5x volume. Stop just under the low (A: 60-day low, B: the higher low).
   Same 1% risk, 2R target, breakeven at +1R, 10-day time stop.
-  Trial status: backtest first. No paper entries on this setup until the backtest passes the bar below.
+  Trial status: **FAILED backtest 2026-11-19** (233 trades, 36% win, -0.05R, PF 0.9, -8.6% vs SPY +65.5%,
+  DD 12.1%). DISABLED: no paper entries. Kept in code only as an opt-in for future variants.
   Purpose: build the 30+ closed paper trades the Webull risk-sheet.md requires before any live use.
   Remove the setup if the backtest fails.
 

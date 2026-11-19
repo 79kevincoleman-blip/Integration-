@@ -18,3 +18,6 @@
 
 ## 2026-11-19 — backtest
 - v2 rules on 3y of daily data: 368 trades, +0.03R avg, no statistically real edge; +6% vs SPY +67%. Risk control worked (DD 9.7% vs SPY 18.7%) but there is no profit engine. Paused per rules.
+
+## 2026-11-19 — reversal trial
+- Webull "downtrend -> lowest low -> reversal" setup on 3y of liquid names: 233 trades, 36% win, -0.05R, -8.6% vs SPY +65.5%. Buying the bottom of downtrends loses even in liquid stocks; the IMCC/BGSF losses were the strategy, not just the stock picks. Disabled.

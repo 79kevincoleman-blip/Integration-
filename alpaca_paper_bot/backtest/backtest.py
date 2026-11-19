@@ -27,7 +27,7 @@ UNIVERSE = {
 LEVERAGED = {"SOXS", "SQQQ", "SPXS"}
 BENCH = "SPY"
 SLIP = 0.0005
-SETUPS = {"pullback", "base-breakout", "inverse-breakdown", "reversal"}  # overridden by request.json "setups"
+SETUPS = {"pullback", "base-breakout", "inverse-breakdown"}  # "reversal" trial FAILED 11-19; opt in via request.json "setups"
 RISK, CAP, CAP_LEV, CASH_FLOOR, MAX_POS, RR, TIME_STOP = 0.01, 0.20, 0.10, 0.10, 5, 2.0, 10
 
 

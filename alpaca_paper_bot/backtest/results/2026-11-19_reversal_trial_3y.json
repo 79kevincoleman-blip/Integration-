@@ -1,0 +1,6 @@
+{"run": "https://github.com/79kevincoleman-blip/Integration-/actions/runs/44571361969", "data_feed": "iex (SIP not on plan)",
+ "setups": ["reversal"], "trades": 233, "win_rate": 0.361, "expectancy_r": -0.048, "expectancy_r_95ci": [-0.199, 0.104],
+ "profit_factor": 0.9, "start": "2023-11-20", "end": "2026-11-19", "final_equity": 91382.31, "total_return_pct": -8.62,
+ "cagr_pct": -2.97, "max_drawdown_pct": 12.11,
+ "spy_buy_hold": {"total_return_pct": 65.47, "cagr_pct": 18.36, "max_drawdown_pct": 18.74},
+ "verdict": "FAIL: negative expectancy, profit factor 0.9, -8.6% vs SPY +65.5%, max DD 12.1% > 8%. Setup disabled; no paper entries."}

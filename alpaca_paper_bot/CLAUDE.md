@@ -12,8 +12,8 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Equity $100,000, 0 positions, 0 closed trades as of 2026-11-18 close.
 - Backtest v2 (2026-11-19, 3y, 368 trades): FAIL. +0.031R/trade (95% CI -0.08..+0.14), +6.0% total vs SPY +66.7%, max DD 9.7%.
 - 11-19: owner TEMPORARILY added the Webull "downtrend reversal" setup (RULES.md) as a paper trial.
-  Backtest of reversal alone requested (backtest/request.json setups=["reversal"]). Paper entries on it
-  only if it passes; remove it if it fails. Universe extended with RIVN, F, NU, SOFI, PYPL, SNAP, DIS, INTC, PFE.
+  Backtest of reversal alone: FAIL (233 trades, -0.048R, PF 0.9, -8.6% vs SPY +65.5%, DD 12.1%).
+  Setup DISABLED (not in default SETUPS); no paper entries. Universe extended with RIVN, F, NU, SOFI, PYPL, SNAP, DIS, INTC, PFE.
 - NEW ENTRIES PAUSED per RULES.md (fail = review before continuing). Scheduled tasks only sync/report until owner approves a v3.
 
 ## Decision log
