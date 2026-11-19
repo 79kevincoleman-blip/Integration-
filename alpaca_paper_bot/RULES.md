@@ -31,7 +31,11 @@ so 3 proposals in 4 days all expired. v2 holds positions 2-10 days so one approv
 - **Base breakout**: 3-6 week tight range (<12% wide), close above the range high on >1.5x avg volume. Stop under the range midpoint.
 - **Downtrend short via inverse ETF**: index/sector below 50-day MA, failed bounce at the 20-day MA. Buy the inverse ETF, stop above the bounce high (in index terms).
 
-## Scorecard (pass/fail after 30 closed trades)
+## Scorecard
+**Status 2026-11-19: v2 FAILED backtest — new entries paused pending v3.**
+Pass bar (all required): backtest beats SPY after costs with expectancy 95% CI > 0; live paper consistent with backtest; max DD < 8%.
+
+### Old bar (retired: too noisy at 30 trades)
 - Pass: expectancy > +0.2R per trade, max drawdown < 8%, profit factor > 1.3.
 - Pass = start proposing real-account versions (owner confirms each in Webull).
 - Fail = review the rules before continuing.

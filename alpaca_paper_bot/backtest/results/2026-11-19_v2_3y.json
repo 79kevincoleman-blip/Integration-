@@ -1,0 +1,8 @@
+{"run": "https://github.com/79kevincoleman-blip/Integration-/actions/runs/44426775803", "data_feed": "iex (SIP not on plan)",
+ "trades": 368, "win_rate": 0.432, "expectancy_r": 0.031, "expectancy_r_95ci": [-0.076, 0.137], "profit_factor": 1.08,
+ "by_setup": {"base-breakout": {"trades": 38, "expectancy_r": 0.082, "win_rate": 0.526},
+              "inverse-breakdown": {"trades": 8, "expectancy_r": 0.003, "win_rate": 0.375},
+              "pullback": {"trades": 322, "expectancy_r": 0.025, "win_rate": 0.422}},
+ "start": "2023-11-20", "end": "2026-11-18", "final_equity": 105971.78, "total_return_pct": 5.97, "cagr_pct": 1.96,
+ "max_drawdown_pct": 9.71, "spy_buy_hold": {"total_return_pct": 66.72, "cagr_pct": 18.68, "max_drawdown_pct": 18.74},
+ "verdict": "FAIL: expectancy CI includes 0; return far below SPY; max DD 9.7% > 8% limit. Universe is today's large caps (survivorship bias flatters results)."}

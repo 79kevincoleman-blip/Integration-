@@ -15,3 +15,6 @@
 
 ## 2026-11-18
 - NVDA beat faded: SMH opened 468, closed ~458; SPY never bounced (high 735 vs 748 trigger). In a strong downtrend, waiting for a bounce into the 20d can miss the move. Add alternative trigger: continuation entry on a break of the prior day low.
+
+## 2026-11-19 — backtest
+- v2 rules on 3y of daily data: 368 trades, +0.03R avg, no statistically real edge; +6% vs SPY +67%. Risk control worked (DD 9.7% vs SPY 18.7%) but there is no profit engine. Paused per rules.
