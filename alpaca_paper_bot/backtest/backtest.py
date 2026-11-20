@@ -33,6 +33,8 @@ RISK, CAP, CAP_LEV, CASH_FLOOR, MAX_POS, RR, TIME_STOP = 0.01, 0.20, 0.10, 0.10,
 
 # ---------------- data ----------------
 def fetch_alpaca(symbols, start, end):
+    if "T" not in end:
+        end = end + "T00:00:00Z"  # explicit UTC; a bare date can count as "recent SIP data" and get a 403
     key = os.environ["ALPACA_KEY_ID"].strip()
     sec = os.environ["ALPACA_SECRET_KEY"].strip()
     out = {s: [] for s in symbols}
