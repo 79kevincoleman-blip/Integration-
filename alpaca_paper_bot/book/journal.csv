@@ -8,3 +8,4 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-16,3-shadow,AMD,failed-breakdown reclaim,522.01,517.40,532,47,Hypothetical if confirmed at 9:51,517.39,stopped 9:55 bar (low 515.69) (hypothetical),-217,-1.0,Reclaim failed within 5 min after export-rule headline; fresh negative news on the sector should void a long setup
 2026-11-17,4-shadow,SH (-1x SPY),index-inverse,SPY 738,SPY 757,SPY 700,27u,Hypothetical if confirmed; still open at close (SPY 730.44 / SH 33.99),,open (hypothetical),+205,+0.4,Short-side setup working on day 1; approval still the bottleneck
 2026-11-20,-,-,v4.2 08:15 run,-,-,-,0,pre-market; 309 live prices; RS top20 MRNA CRWD APP IDXX MCK...; no breakouts,,no orders,0,0,
+2026-11-20,-,-,v4.2 09:36 run (RS top 100),-,-,-,0,market-open; 309 live prices; 100 candidates; no breakouts (too early: 15-min-delayed volume not yet available),,no orders,0,0,
