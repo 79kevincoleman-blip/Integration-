@@ -1,4 +1,7 @@
-# ACTIVE STRATEGY: v4.1 LIVE on Alpaca paper (from 2026-11-19, owner: "Let alpaca be fully automated")
+# ACTIVE STRATEGY: v4.2 LIVE on Alpaca paper from 2026-11-20 (v4.1 + owner's 4 'more trades' changes, see
+# backtest/strategy_v42.py: 308 names, RS top 20, base <15% & volume 1.3x, 8 positions x 12.5%, 3 per sector,
+# 3 new per day). Owner chose to run it on paper before the backtest result.
+# Previously: v4.1 LIVE on Alpaca paper (from 2026-11-19, owner: "Let alpaca be fully automated")
 Frozen rules: backtest/V4_1_PREREGISTRATION.md. Code: bot/live_v41.py. Workflow: .github/workflows/alpaca-live.yml.
 - Fully automatic, no approvals. One run per trading day before the open.
 - Scan: 63-day relative strength vs SPY > 0, top 10, close > 50d > 200d (stocks + index/sector ETFs).
