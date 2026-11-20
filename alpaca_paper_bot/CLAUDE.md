@@ -19,6 +19,7 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Backtest v4 (owner outline: RS momentum pullbacks/breakouts, R-multiple or structure exits; 2026-11-19, 6y): FAIL all 4 variants; best +30% vs SPY +121%. Pullbacks negative everywhere; breakouts positive everywhere (+0.09..+0.20R). Candidate next test: breakout-only (pre-declared, post-hoc idea).
 - Backtest v4.1 PRE-REGISTERED (breakout-only, 3R, close<50d, 20d max): FAIL 3/4 checks (CI lower -0.07; only 59 trades/6y). +40% vs SPY +121%, Sharpe 1.36 vs 0.88, DD 4.8% vs 24.5%, positive both halves. Best so far. Per prereg: no more variants; owner to decide whether to paper-trade the frozen rules for more data.
 - v4.1 10-YEAR backtest (2016-26): $100k -> $134.7k (+34.7%, 3.0%/yr, DD 8.4%) vs SPY -> $386.7k (+286.7%). 2016-21 the setup lost (-0.04R); edge only 2021-26. 6y result overstated it.
+- 2026-11-20: owner: 'Run again and expand to 100 names' -> RS candidate list top 100 (was 20). Universe still 308.
 - 2026-11-20 08:15 first v4.2 live run: OK, no signals, no orders. Equity $100,000, 0 positions.
 - v4.2 10y backtest (run after go-live): 257 trades but $100k->$112.5k vs v4.1 $134.7k; avg -0.05R, negative both halves. Owner informed; v4.2 still live per owner unless told otherwise.
 - 2026-11-19 night: owner: 'Do all 4 changes and let's see how it does on paper tomorrow' -> v4.2 LIVE from 2026-11-20

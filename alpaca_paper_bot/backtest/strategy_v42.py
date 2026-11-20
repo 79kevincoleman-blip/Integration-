@@ -62,7 +62,7 @@ def entry_signal(b, i):
 def apply():
     v4.NAMES = NAMES
     v4.ETFS = ETFS
-    v4.RS_TOP = 20
+    v4.RS_TOP = 100  # owner 2026-11-20: expand candidate list to 100 names (was 20)
     v4.MAX_POS = 8
     v4.CAP = 0.125
     v4.PER_THEME = 3
