@@ -1,0 +1,7 @@
+{"run":"https://github.com/79kevincoleman-blip/Integration-/actions/runs/44653855273","data_feed":"sip","period":"2016-11-21 to 2026-11-18",
+"changes":"308 names, RS top 20, base<15% & vol 1.3x, 8 pos x 12.5%, 3/sector, 3 new/day",
+"SPY":{"return_pct":286.7,"cagr_pct":14.53,"max_dd_pct":33.8},
+"v4_2":{"full":{"return_pct":12.5,"cagr_pct":1.19,"max_dd_pct":12.6,"sharpe":0.23,"trades":257,"win_rate":0.412,"avg_r":-0.049,"avg_r_95ci":[-0.204,0.106],"profit_factor":0.91,"by_exit":{"stop":112,"stop-gap":16,"structure-break":10,"target":15,"target-gap":2,"time":102}},
+"first_half":{"return_pct":1.6,"trades":144,"avg_r":-0.003},"second_half":{"return_pct":10.8,"trades":113,"avg_r":-0.109}},
+"vs_v4_1_10y":{"v4_1":{"return_pct":34.7,"trades":94,"avg_r":0.062,"max_dd_pct":8.4}},
+"verdict":"More trades (257 vs 94) but worse: +12.5% vs v4.1 +34.7%; avg trade negative in both halves; DD 12.6%. Looser filters added losing trades."}
