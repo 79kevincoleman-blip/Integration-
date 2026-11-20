@@ -122,7 +122,7 @@ def main(dry_run):
     held = {p["symbol"]: p for p in positions}
     syms = sorted(set(v4.NAMES) | {v4.BENCH} | set(held))
     start = (date.fromisoformat(last_session) - timedelta(days=420)).isoformat()
-    data = v4.fetch_alpaca(syms, start, last_session)
+    data = v4.fetch_alpaca(syms, start, f"{last_session}T23:00:00Z")  # explicit UTC end: avoids "recent SIP" 403 in evening runs
     data = {k: sorted(v, key=lambda x: x["d"]) for k, v in data.items() if v}
 
     # LIVE PRICES (owner 2026-11-19: "get the most up-to-date real time prices before you make a decision")
@@ -182,7 +182,7 @@ def main(dry_run):
         if r > 0:
             rs.append((r, sym))
     rs.sort(reverse=True)
-    log["rs_top10"] = [s for _, s in rs[:v4.RS_TOP]]
+    log["rs_top"] = [s for _, s in rs[:v4.RS_TOP]]
     new = 0
     for _, sym in rs[:v4.RS_TOP]:
         if new >= MAX_NEW or n_pos >= v4.MAX_POS:
