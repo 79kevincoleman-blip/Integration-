@@ -1,4 +1,6 @@
-"""Live v4.1 bot for the Alpaca PAPER account. One run = one trading-day cycle (run before the open).
+"""Live v4.2 bot (v4.1 rules + 4 owner changes in backtest/strategy_v42.py: ~330 names, RS top 20,
+base <15% & volume 1.3x, 8 positions x 12.5%, 3 per sector, 3 new/day).
+Originally: Live v4.1 bot for the Alpaca PAPER account. One run = one trading-day cycle (run before the open).
 
 Rules are the frozen v4.1 rules (backtest/V4_1_PREREGISTRATION.md), implemented with the same code as the backtest:
   scan    63-day relative strength vs SPY > 0, top 10, close > 50d > 200d (stocks + index/sector ETFs)
@@ -22,12 +24,13 @@ from datetime import date, datetime, timedelta, timezone
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "backtest"))
 import backtest_v4 as v4  # noqa: E402
+import strategy_v42  # noqa: E402,F401  (owner 2026-11-19: all 4 "more trades" changes; patches v4)
 
 PAPER = "https://paper-api.alpaca.markets"
 DATA = "https://data.alpaca.markets"
-R_MULT, STRUCT_MA, MAX_HOLD, MAX_NEW, MAX_GAP, HALT_DD = 3.0, 50, 20, 2, 0.01, 0.10
+R_MULT, STRUCT_MA, MAX_HOLD, MAX_NEW, MAX_GAP, HALT_DD = 3.0, 50, 20, strategy_v42.MAX_NEW, 0.01, 0.10
 LIMIT_SLACK = 0.003  # buy limit = live price + 0.3%
-TAG = "v41"
+TAG = "v42"
 
 
 def api(base, method, path, body=None):
@@ -232,7 +235,7 @@ def main(dry_run):
 if __name__ == "__main__":
     req = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else {}
     out = main(bool(req.get("dry_run", False)))
-    print("LIVE_V41 " + json.dumps(out))
+    print("LIVE_V42 " + json.dumps(out))
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a") as f:
