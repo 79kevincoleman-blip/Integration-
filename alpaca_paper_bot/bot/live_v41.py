@@ -99,16 +99,21 @@ def trading_days_between(cal, d0, d1):
     return sum(1 for c in cal if d0 < c["date"] <= d1)
 
 
-def main(dry_run):
+def main(dry_run, trial=False):
     log = {"run_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "dry_run": dry_run, "actions": [], "notes": []}
     today = date.today().isoformat()
     s, cal = api(PAPER, "GET", f"/v2/calendar?start={(date.today() - timedelta(days=60)).isoformat()}&end={today}")
     if s != 200 or not cal:
         raise SystemExit(f"calendar error {s} {cal}")
     if cal[-1]["date"] != today:
-        log["notes"].append("market closed today; nothing to do")
-        return log
-    last_session = cal[-2]["date"]  # bars through yesterday's close
+        if not (dry_run and trial):
+            log["notes"].append("market closed today; nothing to do")
+            return log
+        # TRIAL (dry run only, market closed): scan as if pre-market of the next session
+        last_session = cal[-1]["date"]
+        log["notes"].append(f"TRIAL on a closed day: using bars through {last_session}; no orders possible")
+    else:
+        last_session = cal[-2]["date"]  # bars through yesterday's close
 
     s, acct = api(PAPER, "GET", "/v2/account")
     _, positions = api(PAPER, "GET", "/v2/positions")
@@ -234,7 +239,7 @@ def main(dry_run):
 
 if __name__ == "__main__":
     req = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else {}
-    out = main(bool(req.get("dry_run", False)))
+    out = main(bool(req.get("dry_run", False)), bool(req.get("trial", False)))
     print("LIVE_V42 " + json.dumps(out))
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
