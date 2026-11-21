@@ -19,6 +19,7 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Backtest v4 (owner outline: RS momentum pullbacks/breakouts, R-multiple or structure exits; 2026-11-19, 6y): FAIL all 4 variants; best +30% vs SPY +121%. Pullbacks negative everywhere; breakouts positive everywhere (+0.09..+0.20R). Candidate next test: breakout-only (pre-declared, post-hoc idea).
 - Backtest v4.1 PRE-REGISTERED (breakout-only, 3R, close<50d, 20d max): FAIL 3/4 checks (CI lower -0.07; only 59 trades/6y). +40% vs SPY +121%, Sharpe 1.36 vs 0.88, DD 4.8% vs 24.5%, positive both halves. Best so far. Per prereg: no more variants; owner to decide whether to paper-trade the frozen rules for more data.
 - v4.1 10-YEAR backtest (2016-26): $100k -> $134.7k (+34.7%, 3.0%/yr, DD 8.4%) vs SPY -> $386.7k (+286.7%). 2016-21 the setup lost (-0.04R); edge only 2021-26. 6y result overstated it.
+- 2026-11-21 (Sat) trials: Alpaca bridge + live bot trial mode OK (309 prices, top-100 RS, no breakouts on Fri close). Webull connector read-only check OK. Added 'trial' flag (dry run on closed days).
 - 2026-11-20 close: day 1 of v4.2 done. 4 runs (08:15, 09:36, 11:15, 13:00), 0 signals, 0 orders. Equity $100,000, 0 positions, 0/30 live trades.
 - 2026-11-20: owner: 'Run again and expand to 100 names' -> RS candidate list top 100 (was 20). Universe still 308.
 - 2026-11-20 08:15 first v4.2 live run: OK, no signals, no orders. Equity $100,000, 0 positions.
