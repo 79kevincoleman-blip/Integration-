@@ -18,8 +18,8 @@ PAUSE_DRAWDOWN_PCT = 0.30
 
 
 def get_keys():
-    key = os.environ.get("ALPACA_KEY_ID")
-    secret = os.environ.get("ALPACA_SECRET")
+    key = os.environ.get("ALPACA_KEY_ID", "").strip()
+    secret = os.environ.get("ALPACA_SECRET", "").strip()
     if not key or not secret:
         raise SystemExit("Missing ALPACA_KEY_ID / ALPACA_SECRET environment variables.")
     return key, secret
