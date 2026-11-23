@@ -11,4 +11,4 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-20,-,-,v4.2 09:36 run (RS top 100),-,-,-,0,market-open; 309 live prices; 100 candidates; no breakouts (too early: 15-min-delayed volume not yet available),,no orders,0,0,
 2026-11-20,-,-,v4.2 11:15 run (RS top 100),-,-,-,0,market-open with volume; 100 candidates; no breakouts,,no orders,0,0,
 2026-11-20,-,-,v4.2 13:00 run (RS top 100),-,-,-,0,market-open; 100 candidates; no breakouts,,no orders,0,0,
-2026-11-23,08:15,v42,none,,,,,no signals (pre-market)
+2026-11-23,run-0815,,,,,,,no exits; no breakout signals (v42 pre-market),,,,,
