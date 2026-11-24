@@ -1,1 +1,1 @@
-[{"action":"positions","nonce":"2026-11-24-manual-fillcheck"},{"action":"account"}]
+[{"action":"account","nonce":"2026-11-24-1300-sync"},{"action":"positions"},{"action":"orders","status":"open"}]
