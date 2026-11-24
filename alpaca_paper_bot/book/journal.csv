@@ -14,3 +14,6 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-23,run-0815,,,,,,,no exits; no breakout signals (v42 pre-market),,,,,
 2026-11-24,894f9f59,GILD,breakout,177.70,166.17,212.29,70,v42 RS top-100 breakout (limit; risk $807),,,,,
 2026-11-24,a3763727,TGT,breakout,176.07,161.45,219.93,68,v42 RS top-100 breakout (limit; risk $994),,,,,
+2026-11-24,d9ba72d5,MARA,manual,,,,15,owner manual market buy (not bot-managed),,,,,
+2026-11-24,a29ef281,TNMG,manual,,,,15,owner manual market buy (not bot-managed),,,,,
+2026-11-24,366185c8,SKYD,manual,,,,15,owner manual market buy (not bot-managed),,,,,
