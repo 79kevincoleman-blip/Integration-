@@ -99,7 +99,7 @@ def trading_days_between(cal, d0, d1):
     return sum(1 for c in cal if d0 < c["date"] <= d1)
 
 
-def main(dry_run, trial=False):
+def main(dry_run, trial=False, protect_only=False):
     log = {"run_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "dry_run": dry_run, "actions": [], "notes": []}
     today = date.today().isoformat()
     s, cal = api(PAPER, "GET", f"/v2/calendar?start={(date.today() - timedelta(days=60)).isoformat()}&end={today}")
@@ -166,6 +166,47 @@ def main(dry_run, trial=False):
                 act["http"], act["result"] = api(PAPER, "DELETE", f"/v2/positions/{sym}")
             log["actions"].append(act)
 
+    # 1b) protection: every held position must have a live stop + target (bracket legs placed as 'day' expire at
+    #     the close; fix 2026-11-24). Re-place them as a GTC OCO using the stop/target from our entry order.
+    exiting = {a["symbol"] for a in log["actions"] if a["type"] == "exit"}
+    for sym, p in held.items():
+        if sym in exiting or any(o["symbol"] == sym and o["side"] == "sell" for o in open_orders or []):
+            continue
+        stop = tgt = None
+        for o in hist or []:  # newest first
+            if o["symbol"] == sym and o.get("side") == "buy" and (o.get("client_order_id") or "").startswith(TAG + "-"):
+                for leg in o.get("legs") or []:
+                    if leg.get("stop_price"):
+                        stop = leg["stop_price"]
+                    elif leg.get("limit_price"):
+                        tgt = leg["limit_price"]
+                break
+        if not (stop and tgt):
+            log["notes"].append(f"{sym}: held but no stop/target found in our orders; NOT protected")
+            continue
+        oco = {"symbol": sym, "qty": str(abs(int(float(p["qty"])))), "side": "sell", "type": "limit",
+               "time_in_force": "gtc", "order_class": "oco",
+               "take_profit": {"limit_price": str(tgt)}, "stop_loss": {"stop_price": str(stop)}}
+        act = {"type": "protect", "symbol": sym, "qty": oco["qty"], "stop": stop, "target": tgt}
+        if not dry_run:
+            act["http"], res = api(PAPER, "POST", "/v2/orders", oco)
+            if act["http"] != 200:
+                act["result"] = res
+        log["actions"].append(act)
+
+    # 1c) cancel our unfilled entry orders from earlier days (entries are GTC so their legs survive the close)
+    for o in open_orders or []:
+        cid = o.get("client_order_id") or ""
+        if o["side"] == "buy" and cid.startswith(TAG + "-") and not cid.endswith(today.replace("-", "")):
+            if not dry_run:
+                api(PAPER, "DELETE", f"/v2/orders/{o['id']}")
+            log["actions"].append({"type": "cancel-stale-entry", "symbol": o["symbol"], "order_id": o["id"]})
+    open_orders = [o for o in open_orders or [] if not any(a.get("order_id") == o["id"] and a["type"] == "cancel-stale-entry" for a in log["actions"])]
+
+    if protect_only:
+        log["notes"].append("protect-only run: no exits/entries evaluated beyond protection")
+        return log
+
     # 2) entries
     if equity < peak * (1 - HALT_DD):
         log["notes"].append(f"HALT: equity {equity:.0f} is >10% below 1y peak {peak:.0f}; no new entries")
@@ -219,7 +260,7 @@ def main(dry_run, trial=False):
             log["notes"].append(f"{sym}: signal but no buying power")
             continue
         order = {"symbol": sym, "qty": str(qty), "side": "buy", "type": "limit", "limit_price": str(limit),
-                 "time_in_force": "day", "order_class": "bracket",
+                 "time_in_force": "gtc", "order_class": "bracket",
                  "client_order_id": f"{TAG}-{sym}-{today.replace('-', '')}",
                  "take_profit": {"limit_price": str(target)}, "stop_loss": {"stop_price": str(stop)}}
         act = {"type": "entry", "symbol": sym, "theme": theme, "qty": qty, "limit": limit, "stop": stop,
@@ -239,7 +280,7 @@ def main(dry_run, trial=False):
 
 if __name__ == "__main__":
     req = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else {}
-    out = main(bool(req.get("dry_run", False)), bool(req.get("trial", False)))
+    out = main(bool(req.get("dry_run", False)), bool(req.get("trial", False)), bool(req.get("protect_only", False)))
     print("LIVE_V42 " + json.dumps(out))
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
