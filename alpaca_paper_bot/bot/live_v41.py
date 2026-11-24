@@ -25,10 +25,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "backtest"))
 import backtest_v4 as v4  # noqa: E402
 import strategy_v42  # noqa: E402,F401  (owner 2026-11-19: all 4 "more trades" changes; patches v4)
+import strategy_v43  # noqa: E402  (owner 2026-11-24: switch to C_slots sizing)
 
 PAPER = "https://paper-api.alpaca.markets"
 DATA = "https://data.alpaca.markets"
-R_MULT, STRUCT_MA, MAX_HOLD, MAX_NEW, MAX_GAP, HALT_DD = 3.0, 50, 20, strategy_v42.MAX_NEW, 0.01, 0.10
+R_MULT, STRUCT_MA, MAX_HOLD, MAX_NEW, MAX_GAP, HALT_DD = 3.0, 50, 20, strategy_v43.MAX_NEW, 0.01, 0.10
 LIMIT_SLACK = 0.003  # buy limit = live price + 0.3%
 TAG = "v42"
 

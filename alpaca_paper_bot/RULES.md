@@ -1,3 +1,5 @@
+> ACTIVE 2026-11-24: v4.3 = v4.2 signals + C sizing (12 positions, 0.75% risk/trade, 8.5% max per stock, 4 per sector, 5 new/day). See backtest/strategy_v43.py.
+
 # ACTIVE STRATEGY: v4.2 LIVE on Alpaca paper from 2026-11-20 (v4.1 + owner's 4 'more trades' changes, see
 # backtest/strategy_v42.py: 308 names, RS top 20, base <15% & volume 1.3x, 8 positions x 12.5%, 3 per sector,
 # 3 new per day). Owner chose to run it on paper before the backtest result.
