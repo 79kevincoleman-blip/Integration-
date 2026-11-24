@@ -1,1 +1,1 @@
-[{"action":"account","nonce":"2026-11-24-recap"},{"action":"positions"},{"action":"orders","status":"open"},{"action":"bars","symbol":"SPY","limit":6}]
+[{"action":"orders","status":"open","nonce":"2026-11-24-protect-verify"}]
