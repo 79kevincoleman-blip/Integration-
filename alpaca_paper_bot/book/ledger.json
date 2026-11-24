@@ -89,5 +89,57 @@
       "status": "cancelled_unfilled (SPY high 735.06 < 748)"
     }
   ],
-  "venue": "alpaca-paper (6GSX) via GitHub Actions bridge"
+  "venue": "alpaca-paper (6GSX) via GitHub Actions bridge",
+  "alpaca_paper": {
+    "as_of": "2026-11-24 close",
+    "equity": 100043.54,
+    "cash": 68270.57,
+    "day_pnl": 43.54,
+    "bot_positions": {
+      "GILD": {
+        "qty": 70,
+        "entry": 177.17,
+        "stop": 166.17,
+        "target": 212.29,
+        "upl": 110.6,
+        "days": 1
+      },
+      "TGT": {
+        "qty": 68,
+        "entry": 175.69,
+        "stop": 161.45,
+        "target": 219.93,
+        "upl": 7.6,
+        "days": 1
+      },
+      "DLTR": {
+        "qty": 46,
+        "entry": 155.83,
+        "stop": 139.69,
+        "target": 204.77,
+        "upl": -74.06,
+        "days": 1
+      }
+    },
+    "manual_positions": {
+      "MARA": {
+        "qty": 15,
+        "entry": 5.09,
+        "upl": 4.2
+      },
+      "SKYD": {
+        "qty": 15,
+        "entry": 6.57,
+        "upl": -0.75
+      },
+      "TNMG": {
+        "qty": 15,
+        "entry": 2.51,
+        "upl": -4.05
+      }
+    },
+    "closed_trades": [],
+    "live_trade_count": 3,
+    "strategy": "v4.3 (C sizing)"
+  }
 }
