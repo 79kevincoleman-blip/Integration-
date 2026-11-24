@@ -51,6 +51,14 @@ def run(req):
              "take_profit": {"limit_price": str(req["target"])},
              "stop_loss": {"stop_price": str(req["stop"])}}
         return call(PAPER, "POST", "/v2/orders", o)
+    if act == "asset":
+        s, a = call(PAPER, "GET", "/v2/assets/" + req["symbol"])
+        keep = ["symbol", "name", "exchange", "status", "tradable", "fractionable", "shortable"]
+        return s, ({k: a.get(k) for k in keep} if isinstance(a, dict) else a)
+    if act == "market":  # owner's manual paper order
+        o = {"symbol": req["symbol"], "qty": str(req["qty"]), "side": req.get("side", "buy"), "type": "market",
+             "time_in_force": "day", "client_order_id": req.get("client_id")}
+        return call(PAPER, "POST", "/v2/orders", o)
     if act == "cancel":
         return call(PAPER, "DELETE", "/v2/orders/" + req["order_id"])
     if act == "close":

@@ -124,7 +124,15 @@ def main(dry_run, trial=False, protect_only=False):
     peak = max([x for x in (ph or {}).get("equity", []) if x] + [equity, 100000.0])
     log["account"] = {"equity": equity, "cash": cash, "peak_1y": peak, "positions": len(positions)}
 
-    held = {p["symbol"]: p for p in positions}
+    # the bot only manages positions it opened (client_order_id tag); owner's manual buys are left alone
+    bot_syms = {o["symbol"] for o in hist or [] if (o.get("client_order_id") or "").startswith(TAG + "-")
+                and o.get("side") == "buy" and o.get("filled_at")}
+    held = {p["symbol"]: p for p in positions if p["symbol"] in bot_syms}
+    manual = sorted(p["symbol"] for p in positions if p["symbol"] not in bot_syms)
+    if manual:
+        log["notes"].append("manual positions left alone: " + ", ".join(manual))
+    positions = [p for p in positions if p["symbol"] in bot_syms]
+    open_orders = [o for o in open_orders or [] if not (o.get("client_order_id") or "").startswith("manual-")]
     syms = sorted(set(v4.NAMES) | {v4.BENCH} | set(held))
     start = (date.fromisoformat(last_session) - timedelta(days=420)).isoformat()
     data = v4.fetch_alpaca(syms, start, f"{last_session}T23:00:00Z")  # explicit UTC end: avoids "recent SIP" 403 in evening runs

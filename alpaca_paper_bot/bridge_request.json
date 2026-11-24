@@ -1,1 +1,5 @@
-[{"action":"account","nonce":"2026-11-24-1115-sync"},{"action":"positions"},{"action":"orders","status":"all"}]
+[{"action":"asset","symbol":"MARA","nonce":"2026-11-24-manual-buy"},{"action":"asset","symbol":"TNMG"},{"action":"asset","symbol":"SKYD"},
+ {"action":"market","symbol":"MARA","qty":15,"client_id":"manual-MARA-20261124"},
+ {"action":"market","symbol":"TNMG","qty":15,"client_id":"manual-TNMG-20261124"},
+ {"action":"market","symbol":"SKYD","qty":15,"client_id":"manual-SKYD-20261124"},
+ {"action":"positions"}]
