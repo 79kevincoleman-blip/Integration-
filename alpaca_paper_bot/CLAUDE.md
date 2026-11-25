@@ -8,6 +8,11 @@ Read this first when resuming. Owner: repo 79kevincoleman-blip/Integration-, bra
 - Goal: a profitable, proven strategy before any real money.
 
 ## Current state (update on every change)
+- 2026-11-25 owner (from the Webull session, branch claude/webull-real-trading-memory-49sdaz) asked for a
+  STRUCTURE trial: near own 1y low + fall slowing + 2 higher lows & 2 higher highs. Pre-registered in
+  backtest/structure_backtest.py (variants S2, S2_noslow, S1, NEAR baseline; 6y daily). Backtest only; live bot untouched.
+  RESULT: FAIL (S2 134 trades +0.183R, CI -0.04..+0.41, both halves +, +13.2% DD 7.8% vs SPY +114%; beats NEAR +0.06R).
+  Best per-trade result so far but not significant. Not deployed. results/2026-11-25_structure_6y.md.
 - Mode: AUTO on paper (owner said "Auto" 2026-11-17). Venue: Alpaca paper via GitHub Actions bridge.
 - Equity $100,000, 0 positions, 0 closed trades as of 2026-11-18 close.
 - Backtest v2 (2026-11-19, 3y, 368 trades): FAIL. +0.031R/trade (95% CI -0.08..+0.14), +6.0% total vs SPY +66.7%, max DD 9.7%.
