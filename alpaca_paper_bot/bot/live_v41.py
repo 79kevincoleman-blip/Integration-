@@ -161,7 +161,9 @@ def main(dry_run, trial=False, protect_only=False):
         if not b:
             log["notes"].append(f"{sym}: no bars, skipped exit check")
             continue
-        c = [x["c"] for x in b]
+        # owner 2026-11-25: judge the 50d structure exit on COMPLETED daily closes only (as the backtest does),
+        # never on today's in-progress bar -- an intraday dip below the 50d must not trigger a sell.
+        c = [x["c"] for x in b if x["d"] != today]
         ma = v4.sma(c, STRUCT_MA, len(c) - 1)
         d_in = entry_date.get(sym)
         days_held = trading_days_between(cal, d_in, last_session) if d_in else 0
