@@ -21,6 +21,8 @@ Rules (15-minute bars, regular hours only, all times US/Eastern):
  Risk: 0.5% of equity per trade, max 3 open, max 6 entries/day. Costs: 10 bps slippage per side.
 
 Variants: K_nohist (skip rule 2), K_hist50 (rate >= 0.50), K_hist60 (rate >= 0.60).
+Run 1 (2026-11-25): FAIL; hist50/hist60 took 0 trades (base reversal rate 31%). Run 2: owner asked for a 35%
+bounce record -> K_hist35, plus K_hist40 as a robustness check. POST-HOC: a pass needs out-of-sample paper proof.
 PASS (decided before the run) for a variant: avg R 95% CI lower bound > 0, avg R > 0 in both halves, total return
 > 0 after costs, AND the history filter must beat K_nohist on avg R (otherwise rule 2 adds nothing).
 """
@@ -35,7 +37,7 @@ UNIVERSE = ("MARA RIOT CLSK HUT WULF CIFR BITF MSTR COIN HOOD SOFI AFRM UPST PLT
             "RKLB ASTS ACHR JOBY OKLO SMR HIMS CELH ENPH FSLR PLUG GME AMC CVNA OPEN SHOP NET CRWD APP TNMG SKYD "
             "SPY QQQ IWM").split()
 SLIP, RISK, MAX_OPEN, MAX_DAY = 0.0010, 0.005, 3, 6
-VARIANTS = {"K_nohist": None, "K_hist50": 0.50, "K_hist60": 0.60}
+VARIANTS = {"K_nohist": None, "K_hist35": 0.35, "K_hist40": 0.40}  # 2026-11-25 owner: 35% bounce record (post-hoc; 40% added as a robustness check)
 
 
 def fetch(syms, start, end, tf="15Min"):
