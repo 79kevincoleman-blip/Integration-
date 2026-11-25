@@ -2,12 +2,15 @@ from pretrade import pretrade_check
 
 PAPER_OK = {"closed_trades": 30, "expectancy_r": 0.25}
 GOOD = dict(ticker="X", price=20.0, bid=19.99, ask=20.01, market_cap=5e9, entry=20.0, stop=19.0,
-            target=22.5, order_type="LIMIT", et_time="10:15", cash=30.0, setup_signal=True)
+            target=22.5, order_type="LIMIT", et_time="10:15", cash=200.0, setup_signal=True)
 
 def test_go():
     r = pretrade_check(GOOD, PAPER_OK)
     assert r["verdict"] == "GO", r["reasons"]
-    assert r["risk_usd"] == 1.5 and r["shares"] == 1.5 and r["position_usd"] == 30.0
+    assert r["risk_usd"] == 7.5 and r["shares"] == 7.5 and r["position_usd"] == 150.0
+
+def test_max_positions():
+    assert "max 12" in " ".join(pretrade_check(dict(GOOD, open_positions=12), PAPER_OK)["reasons"])
 
 def test_no_stop_is_no_go():
     r = pretrade_check(dict(GOOD, stop=None), PAPER_OK)

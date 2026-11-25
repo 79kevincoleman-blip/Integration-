@@ -4,3 +4,10 @@ date,type,ticker,side,qty,price,stop,target,risk_usd,fees,pnl_usd,r_multiple,not
 2026-11-16,TRADE,IMCC,SELL,5,0.55,1.03,,0.91,0.01,-3.34,-3.65,R measured vs the 15% stop rule (1.03) that was never placed
 ,UNEXPLAINED,,,,,,,,,-17.90,,date and reason needed
 ,UNEXPLAINED,,,,,,,,,15.68,,date and reason needed
+2026-11-19,DEPOSIT,,,,,,,,,120.03,,trading money deposit (owner); derived from balance change - confirm exact amount
+2026-11-20,TRADE,NU,BUY,2,11.42,,,,0.00,,,MARKET order; stop 10.25 placed then cancelled (DAY order expired); no gate run
+2026-11-23,TRADE,SKYD,BUY,5,6.54,,,,0.00,,,MARKET order; no stop/target; no gate run
+2026-11-23,TRADE,MARA,BUY,5,5.90,,,,0.00,,,MARKET order; no stop/target; no gate run
+2026-11-23,TRADE,TNMG,BUY,5,2.24,,,,0.00,,,MARKET order; no stop/target; no gate run (mcap ~$1.7M)
+2026-11-24,TRADE,NUVB,BUY,4,3.91,,,,0.00,,,MARKET order at the open; no stop/target; no gate run
+2026-11-24,TRADE,USDE,BUY,4,3.82,,,,0.00,,,MARKET order at the open; no stop/target; no gate run

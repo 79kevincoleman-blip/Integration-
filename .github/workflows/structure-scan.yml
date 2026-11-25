@@ -1,0 +1,24 @@
+name: Webull structure scan (read-only market data)
+on:
+  push:
+    branches: [claude/webull-real-trading-memory-49sdaz]
+    paths: [scan/**]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python scan/structure_scan.py
+        env:
+          ALPACA_KEY_ID: ${{ secrets.ALPACA_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || secrets.ALPACA_SECRET }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scan
+          path: out/

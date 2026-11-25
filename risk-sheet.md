@@ -8,15 +8,17 @@ returns **GO** (`python pretrade.py`). The check runs BEFORE the order, never af
 No written stop and target = automatic NO-GO.
 
 ## 1. Trading money is a fixed amount
-- TRADING_CAPITAL = $30 (set in pretrade.py). Decided in advance.
+- TRADING_CAPITAL = $150 (set in pretrade.py; was $30, owner deposited ~$120 on 2026-11-19). Decided in advance.
+- Max 12 open positions (owner, 2026-11-25). Risk-based sizing still decides each position's size.
 - Nothing tops it up from household money. Every deposit/withdrawal is logged in webull-journal.csv
   the day it happens (type DEPOSIT / WITHDRAWAL, with a reason). Unlogged cash moves = NO-GO
   until explained.
 
 ## 2. Size by risk - the ONLY sizing rule
-- Risk per trade = 5% of trading capital ($1.50 at $30).
+- Risk per trade = 5% of trading capital ($7.50 at $150). With 12 positions open, total risk is up to 60%
+  of the account if every stop hits - that is the cost of 12 positions at 5% each.
 - shares = dollars at risk / (entry - stop). Position cap = whatever that formula gives
-  (about $5-7 at $30), never more than the cash on hand. No % position caps, no "50% max".
+  (about $25-40 at $150 with a 20-30% stop), never more than the cash on hand. No % position caps, no "50% max".
 - Stop goes below the setup's structure (the low that would prove the idea wrong).
 
 ## 3. Costs are inside every trade
@@ -33,6 +35,15 @@ No written stop and target = automatic NO-GO.
   on 1.5x volume), or a takeoff (higher low + break of the bounce high on volume). No signal = no trade.
 - **Backtest 2026-11-19 (paper bot, 3y, liquid names): FAILED** - 233 trades, 36% win, -0.05R per trade,
   -8.6% vs SPY +65.5%. This setup cannot go live. A new setup must pass the paper bot's backtest first.
+
+## 4c. Structure check (owner, 2026-11-25) - scan/structure_scan.py
+- Look for any stock trading low versus ITS OWN history (near its 1y low / bottom of its 2y range),
+  not only reversals.
+- Then require the fall to slow (20-day slope flattening, smaller daily ranges) and a structure of
+  2 higher lows AND 2 higher highs (stage 2). 1 HL + 1 HH = stage 1 = watch only.
+- Compare with that stock's history: past times it was this close to its low, how often was it up 20
+  trading days later, with and without the stage-2 structure.
+- Reputation check before any GO: analyst ratings, recent news, dilution/reverse splits, debt.
 
 ## 5. Paper first
 - No live setup until the Alpaca paper bot has 30+ CLOSED trades of that setup with positive

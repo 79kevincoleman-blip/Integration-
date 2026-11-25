@@ -6,10 +6,11 @@ trade.json keys: ticker, setup_signal (bool), price, bid, ask, market_cap, entry
 """
 import json, sys
 
-TRADING_CAPITAL = 30.0
+TRADING_CAPITAL = 150.0
 RISK_PCT = 0.05
 MIN_PRICE, MIN_MCAP, MAX_SPREAD_PCT = 5.0, 1e9, 0.005
 MIN_RR, MAX_BREAKEVEN_WR = 2.0, 0.40
+MAX_POSITIONS = 12
 PAPER_MIN_TRADES = 30
 DEFAULT_FEES = 0.02          # SEC/TAF on a small sell, both sides rounded up
 
@@ -31,6 +32,10 @@ def pretrade_check(t, paper=None):
     if not stop < entry < target:
         fails.append("need stop < entry < target")
         return _result(out, fails)
+
+    # max positions
+    if t.get("open_positions", 0) >= MAX_POSITIONS:
+        fails.append(f"already {t['open_positions']} open positions (max {MAX_POSITIONS})")
 
     # 1. cash discipline
     if t.get("unexplained_cash_moves"):
