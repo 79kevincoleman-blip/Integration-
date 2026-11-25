@@ -113,11 +113,13 @@ def trades(sym, b, k, ev, min_rate):
             ex, why = b[j]["c"], "time"
         ex *= 1 - SLIP
         out.append({"sym": sym, "in": b[ent]["d"], "out": b[j]["d"], "r": round((ex - px) / rps, 3), "why": why,
-                    "hist_n": len(past), "hist_rate": round(rate, 2), "peak_r": round((best - px) / rps, 2)})
+                    "hist_n": len(past), "hist_rate": round(rate, 2), "peak_r": round((best - px) / rps, 2),
+                    "rps_pct": round(rps / px, 4)})
     return out
 
 
-def simulate(tr):
+def simulate(tr, cap=None):
+    """cap: max position size as a fraction of equity (realism check: no leverage)."""
     tr = sorted(tr, key=lambda t: t["in"])
     eq, opn, taken, curve = 100000.0, [], [], []
     for t in tr:
@@ -125,7 +127,8 @@ def simulate(tr):
         if len(opn) >= MAX_OPEN:
             continue
         opn.append(t)
-        eq += eq * RISK * t["r"]
+        risk = RISK if cap is None else min(RISK, cap * t["rps_pct"])
+        eq += eq * risk * t["r"]
         taken.append(t)
         curve.append((t["out"], eq))
     return taken, curve
@@ -183,6 +186,16 @@ if __name__ == "__main__":
         all_tr[name] = taken
         res[name] = {k: stats(taken, curve, *v) for k, v in P.items()}
         res[name]["candidates"] = len(cand)
+    # realism check added after run 1 (2026-11-25; NOT a rule change): same KD_nohist trades, each position capped
+    # at 12.5% of equity (no leverage), plus per-year results.
+    cand = [t for s, (b, k) in pre.items() for t in trades(s, b, k, evs[s], None) if t["in"] >= t0]
+    taken, curve = simulate(cand, cap=0.125)
+    res["KD_nohist_cap12.5"] = {k: stats(taken, curve, *v) for k, v in P.items()}
+    yrs_ = sorted({t["in"][:4] for t in all_tr["KD_nohist"]})
+    res["KD_nohist_by_year"] = {y: {"trades": sum(t["in"][:4] == y for t in all_tr["KD_nohist"]),
+                                    "avg_r": round(sum(t["r"] for t in all_tr["KD_nohist"] if t["in"][:4] == y) /
+                                                   max(1, sum(t["in"][:4] == y for t in all_tr["KD_nohist"])), 3)} for y in yrs_}
+    res["avg_position_pct_uncapped"] = round(sum(RISK / t["rps_pct"] for t in all_tr["KD_nohist"]) / max(1, len(all_tr["KD_nohist"])) * 100, 1)
     base = res["KD_nohist"]["full"].get("avg_r", -9)
     ver = {}
     for name in VARIANTS:
