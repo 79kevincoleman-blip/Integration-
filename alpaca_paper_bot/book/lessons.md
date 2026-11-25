@@ -30,3 +30,5 @@
 
 ## 2026-11-19 — v4.1 (pre-registered breakout-only)
 - First version with positive results in both halves and far smaller drawdown (4.8%) than SPY (24.5%). Failed only the statistical-certainty check: 59 trades is too few. Most money sat in T-bills, so raw return is low (+40% vs +121%).
+
+- 2026-11-25 HPQ: live bot judged the 50d structure exit on the intraday price and sold 95 min after buying (-0.43R). The backtest judges it on the daily close. Fixed: exits use completed daily closes only. Lesson: every live rule must be evaluated on the same data the backtest used.
