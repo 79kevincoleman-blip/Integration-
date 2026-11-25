@@ -2,13 +2,16 @@
 
 Usage: python pretrade.py trade.json   (or import pretrade_check)
 trade.json keys: ticker, setup_signal (bool), price, bid, ask, market_cap, entry, stop, target,
+                 [new_52w_low_5d, filings_ok - required under $5],
                  order_type (LIMIT), et_time ("HH:MM"), cash, [fees], [unexplained_cash_moves]
 """
 import json, sys
 
 TRADING_CAPITAL = 150.0
 RISK_PCT = 0.05
-MIN_PRICE, MIN_MCAP, MAX_SPREAD_PCT = 5.0, 1e9, 0.005
+MAX_PRICE, PENNY_PRICE = 50.0, 5.0                 # owner 2026-11-25: $50 cap for all Webull tasks
+PENNY_MIN_MCAP, PENNY_MAX_SPREAD = 50e6, 0.03       # strategy.md penny limits (under $5)
+POS_CAP = 0.25                                       # max 25% of the account per buy
 MIN_RR, MAX_BREAKEVEN_WR = 2.0, 0.40
 MAX_POSITIONS = 12
 PAPER_MIN_TRADES = 30
@@ -41,25 +44,27 @@ def pretrade_check(t, paper=None):
     if t.get("unexplained_cash_moves"):
         fails.append(f"unexplained cash moves {t['unexplained_cash_moves']} - log them in webull-journal.csv")
 
-    # 4. universe
+    # 4. universe: $50 cap; penny limits under $5
     spread = (t["ask"] - t["bid"]) / t["price"]
     out["spread_pct"] = round(spread * 100, 2)
-    if t["price"] <= MIN_PRICE:
-        fails.append(f"price ${t['price']} <= ${MIN_PRICE:.0f}")
-    if t["market_cap"] < MIN_MCAP:
-        fails.append(f"market cap ${t['market_cap']/1e6:,.0f}M < $1B")
-    if spread >= MAX_SPREAD_PCT:
-        fails.append(f"spread {spread*100:.2f}% >= 0.5%")
+    if t["price"] > MAX_PRICE:
+        fails.append(f"price ${t['price']} > ${MAX_PRICE:.0f} cap")
+    if t["price"] < PENNY_PRICE:
+        if t["market_cap"] < PENNY_MIN_MCAP:
+            fails.append(f"penny: market cap ${t['market_cap']/1e6:,.1f}M < $50M")
+        if spread > PENNY_MAX_SPREAD:
+            fails.append(f"penny: spread {spread*100:.2f}% > 3%")
+        if t.get("new_52w_low_5d", True):
+            fails.append("penny: new 52-week low in the last 5 days (or not checked)")
+        if not t.get("filings_ok", False):
+            fails.append("penny: filings not cleared (reverse split / offering / dilution)")
 
-    # 2. size by risk
+    # 2. size by risk, capped at 25% of the account and the cash on hand
     risk_usd = TRADING_CAPITAL * RISK_PCT
     per_share = entry - stop
-    shares = risk_usd / per_share
+    shares = min(risk_usd / per_share, TRADING_CAPITAL * POS_CAP / entry, t["cash"] / entry)
     position = shares * entry
-    if position > t["cash"]:
-        shares = t["cash"] / entry
-        position = t["cash"]
-        risk_usd = shares * per_share
+    risk_usd = shares * per_share
     out.update(shares=round(shares, 4), position_usd=round(position, 2), risk_usd=round(risk_usd, 2))
 
     # 3. costs + breakeven

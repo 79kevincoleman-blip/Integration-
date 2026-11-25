@@ -9,16 +9,14 @@ No written stop and target = automatic NO-GO.
 
 ## 1. Trading money is a fixed amount
 - TRADING_CAPITAL = $150 (set in pretrade.py; was $30, owner deposited ~$120 on 2026-11-19). Decided in advance.
-- Max 12 open positions (owner, 2026-11-25). Risk-based sizing still decides each position's size.
 - Nothing tops it up from household money. Every deposit/withdrawal is logged in webull-journal.csv
   the day it happens (type DEPOSIT / WITHDRAWAL, with a reason). Unlogged cash moves = NO-GO
   until explained.
 
-## 2. Size by risk - the ONLY sizing rule
-- Risk per trade = 5% of trading capital ($7.50 at $150). With 12 positions open, total risk is up to 60%
-  of the account if every stop hits - that is the cost of 12 positions at 5% each.
-- shares = dollars at risk / (entry - stop). Position cap = whatever that formula gives
-  (about $25-40 at $150 with a 20-30% stop), never more than the cash on hand. No % position caps, no "50% max".
+## 2. Sizing (owner, 2026-11-25 - same rules as slickRick / strategy.md, ALL Webull tasks)
+- Risk per trade = 5% of trading capital ($7.50 at $150). shares = dollars at risk / (entry - stop).
+- Max buy size = 25% of the account per position (caps the share count). Never more than cash on hand.
+- Max 12 open positions, each sized by the risk rule (most end up well under 25%).
 - Stop goes below the setup's structure (the low that would prove the idea wrong).
 
 ## 3. Costs are inside every trade
@@ -26,10 +24,12 @@ No written stop and target = automatic NO-GO.
 - Breakeven win rate = (risk + costs) / (reward + risk). The check prints it for every trade.
 - NO-GO if reward:risk < 2:1, or the breakeven win rate after costs is above 40%.
 
-## 4. Universe (liquidity filter, applied before any setup)
-- Price > $5, market cap > $1B, bid-ask spread < 0.5% of price.
-- This removes dilution / reverse-split names (IMCC, BGSF). No more "near the low of the range"
-  screen on illiquid stocks - that shape produced every loss so far.
+## 4. Universe (applied before any setup) - owner, 2026-11-25
+- **Price $50.00 or under** for every Webull scan, plan, watchlist and buy.
+- Under $5, all strategy.md penny limits also apply: market cap >= $50M, spread <= 3%,
+  no new 52-week low in the last 5 trading days, filings checked (reverse splits, offerings, dilution).
+  These block IMCC-type names (IMCC ~$2M cap, TNMG ~$1.7M, USDE no revenue).
+- (Replaces the earlier $5 minimum / $1B cap / 0.5% spread filter.)
 - Inside the universe the setup is: downtrend, then a confirmed reversal (webull_strategy.py):
   near the downtrend low + at least 1 signal (close above prior high, RSI back above 30, up day
   on 1.5x volume), or a takeoff (higher low + break of the bounce high on volume). No signal = no trade.
