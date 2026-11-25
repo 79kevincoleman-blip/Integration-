@@ -1,1 +1,1 @@
-[{"action":"orders","status":"open","nonce":"2026-11-24-protect-verify"}]
+[{"action":"account","nonce":"2026-11-25-1115-sync"},{"action":"positions"},{"action":"orders","status":"open"}]
