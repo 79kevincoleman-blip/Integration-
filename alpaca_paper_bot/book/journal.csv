@@ -19,3 +19,4 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-24,366185c8,SKYD,manual,,,,15,owner manual market buy (not bot-managed),,,,,
 2026-11-24,a55376a0,DLTR,breakout,155.96,139.69,204.77,46,v43 first run (C sizing; GTC bracket; risk $748),,,,,
 2026-11-24,run-1300,,,,,,,no exits; no new signals; DLTR filled @155.83 (GTC legs),,,,,
+2026-11-25,run-0815,,,,,,,no exits; no new signals (v43 pre-market),,,,,
