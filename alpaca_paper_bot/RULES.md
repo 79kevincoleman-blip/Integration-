@@ -1,3 +1,5 @@
+> ACTIVE 2026-11-26: KIM-DAILY for all new entries (backtest/kim_daily.py KD_nohist; live bot/kim_live.py). v4.3 positions managed to exit only.
+
 > ACTIVE 2026-11-24: v4.3 = v4.2 signals + C sizing (12 positions, 0.75% risk/trade, 8.5% max per stock, 4 per sector, 5 new/day). See backtest/strategy_v43.py.
 
 # ACTIVE STRATEGY: v4.2 LIVE on Alpaca paper from 2026-11-20 (v4.1 + owner's 4 'more trades' changes, see

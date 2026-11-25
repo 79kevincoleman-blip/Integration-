@@ -26,6 +26,9 @@ sys.path.insert(0, os.path.join(HERE, "..", "backtest"))
 import backtest_v4 as v4  # noqa: E402
 import strategy_v42  # noqa: E402,F401  (owner 2026-11-19: all 4 "more trades" changes; patches v4)
 import strategy_v43  # noqa: E402  (owner 2026-11-24: switch to C_slots sizing)
+import kim_live as KL  # noqa: E402  (owner 2026-11-25: Kim-daily replaces v4.3 for NEW entries)
+from kim_backtest import UNIVERSE as KIM_UNI  # noqa: E402
+ENTRIES = "kim"  # v4.3 positions (tag v42-) are still managed to exit; no new v4.3 entries
 
 PAPER = "https://paper-api.alpaca.markets"
 DATA = "https://data.alpaca.markets"
@@ -128,13 +131,19 @@ def main(dry_run, trial=False, protect_only=False):
     # the bot only manages positions it opened (client_order_id tag); owner's manual buys are left alone
     bot_syms = {o["symbol"] for o in hist or [] if (o.get("client_order_id") or "").startswith(TAG + "-")
                 and o.get("side") == "buy" and o.get("filled_at")}
+    kim_syms = {o["symbol"] for o in hist or [] if (o.get("client_order_id") or "").startswith(KL.TAG + "-")
+                and o.get("side") == "buy" and o.get("filled_at")}
+    bot_syms -= kim_syms
+    kim_pos = [p for p in positions if p["symbol"] in kim_syms]
+    held_all = {p["symbol"] for p in positions}
     held = {p["symbol"]: p for p in positions if p["symbol"] in bot_syms}
-    manual = sorted(p["symbol"] for p in positions if p["symbol"] not in bot_syms)
+    manual = sorted(p["symbol"] for p in positions if p["symbol"] not in bot_syms | kim_syms)
     if manual:
         log["notes"].append("manual positions left alone: " + ", ".join(manual))
     positions = [p for p in positions if p["symbol"] in bot_syms]
     open_orders = [o for o in open_orders or [] if not (o.get("client_order_id") or "").startswith("manual-")]
-    syms = sorted(set(v4.NAMES) | {v4.BENCH} | set(held))
+    kim_universe = sorted(set(v4.NAMES) | set(KIM_UNI))
+    syms = sorted(set(kim_universe) | {v4.BENCH} | held_all)
     start = (date.fromisoformat(last_session) - timedelta(days=420)).isoformat()
     data = v4.fetch_alpaca(syms, start, f"{last_session}T23:00:00Z")  # explicit UTC end: avoids "recent SIP" 403 in evening runs
     data = {k: sorted(v, key=lambda x: x["d"]) for k, v in data.items() if v}
@@ -214,8 +223,26 @@ def main(dry_run, trial=False, protect_only=False):
             log["actions"].append({"type": "cancel-stale-entry", "symbol": o["symbol"], "order_id": o["id"]})
     open_orders = [o for o in open_orders or [] if not any(a.get("order_id") == o["id"] and a["type"] == "cancel-stale-entry" for a in log["actions"])]
 
+    # 1d) Kim positions: momentum-fade / time exits and trailing stop (completed daily bars only)
+    KL.manage(api, PAPER, data, kim_pos, hist, open_orders, today, dry_run, log)
+
     if protect_only:
         log["notes"].append("protect-only run: no exits/entries evaluated beyond protection")
+        return log
+
+    if ENTRIES == "kim":
+        if equity < peak * (1 - HALT_DD):
+            log["notes"].append(f"HALT: equity {equity:.0f} is >10% below 1y peak {peak:.0f}; no new entries")
+        elif mode != "pre-market" and not trial:
+            log["notes"].append("Kim buys only in the pre-market run (signal on yesterday's close, buy at the open)")
+        else:
+            pending = {o["symbol"] for o in open_orders or [] if o["side"] == "buy"}
+            n_kim = len(kim_pos) + sum(1 for o in open_orders or [] if o["side"] == "buy"
+                                       and (o.get("client_order_id") or "").startswith(KL.TAG + "-"))
+            KL.entries(api, PAPER, data, kim_universe, held_all, pending, n_kim, equity,
+                       cash - equity * v4.CASH_FLOOR, today, dry_run, log)
+        if not log["actions"]:
+            log["notes"].append("no exits, no Kim signals")
         return log
 
     # 2) entries
