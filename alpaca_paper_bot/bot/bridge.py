@@ -64,7 +64,8 @@ def run(req):
     if act == "close":
         return call(PAPER, "DELETE", "/v2/positions/" + req["symbol"])
     if act == "bars":
-        return call(DATA, "GET", f"/v2/stocks/{req['symbol']}/bars?timeframe={req.get('tf','1Day')}&limit={req.get('limit',60)}&feed=iex")
+        start = f"&start={req['start']}" if req.get("start") else ""
+        return call(DATA, "GET", f"/v2/stocks/{req['symbol']}/bars?timeframe={req.get('tf','1Day')}&limit={req.get('limit',60)}&feed=iex{start}")
     raise SystemExit("unknown action " + act)
 
 
