@@ -22,3 +22,8 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-25,run-0815,,,,,,,no exits; no new signals (v43 pre-market),,,,,
 2026-11-25,64574d55,HPQ,breakout,31.19,29.14,37.34,271,v43 11:15 run (delayed by GitHub outage to 11:39; risk $556),,,,,
 2026-11-25,f2b16361,HPQ,breakout,31.11,29.14,37.34,271,,~30.24,structure-break (intraday price < 50d; ~1.5h after entry),-234,-0.44,live checks 50d exit on intraday price; backtest checks daily close
+2026-11-27,df5ffe54,ASTS,kim,mkt open,21.74,,174,Kim signal (ref close 26.02; risk ~$745),,,,,
+2026-11-27,405b9985,JOBY,kim,mkt open,3.18,,1034,Kim signal (ref close 3.90; risk ~$744),,,,,
+2026-11-27,2d123204,PATH,kim,mkt open,11.36,,702,Kim signal (ref close 12.42; risk ~$744),,,,,
+2026-11-27,f2e5612b,PLUG,kim,mkt open,0.81,,2921,Kim signal (ref close 1.065; risk ~$745),,,,,
+2026-11-27,adopt,GILD/TGT/DLTR,kim,,,,,Kim adopted: targets cancelled; GTC stops GILD 166.40 TGT 161.84 DLTR 140.92,,,,,
