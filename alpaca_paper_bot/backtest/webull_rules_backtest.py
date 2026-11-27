@@ -5,7 +5,7 @@
 - Variant A "W_kim_exits": that stop, then Kim's exits (trail = best close - 2.5 ATR never lower, breakeven after +1R,
   momentum fade after +1R, 30-day max).
 - Variant B "W_stop_only": that stop only; otherwise hold up to 60 trading days.
-- Start $150. Costs 20 bps per side (cheap stocks). Stop checked first when a bar hits stop and other exits.
+- Start $5,000 (owner 2026-11-27). Costs 20 bps per side (cheap stocks). Stop checked first when a bar hits stop and other exits.
 Not modelled: penny checks (market cap, spread, filings) - no historical data for them; owner GO/NO.
 Universe: same ~348 names as Kim-daily (survivorship bias: today's names). Reported vs SPY buy-and-hold.
 """
@@ -17,7 +17,7 @@ import strategy_v42  # noqa: E402
 import kim_daily as kd  # noqa: E402
 from kim_backtest import UNIVERSE as KIM_UNI  # noqa: E402
 
-SLIP, START, MAX_PRICE, POS_CAP = 0.0020, 150.0, 15.0, 0.50
+SLIP, START, MAX_PRICE, POS_CAP = 0.0020, 5000.0, 15.0, 0.50  # owner: balance for this test = $5,000
 
 
 def tier_stop(px):
