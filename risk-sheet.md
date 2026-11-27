@@ -2,10 +2,12 @@
 Replaces webull-strategy.md and weekly-lessons.md. risk-rules.md stays the Alpaca PAPER bot's rules.
 Rules only - no account data or credentials.
 
-## 0. THE GATE (hard rule)
-No order is placed - by me or by you in the app - until "Run my pre-trade check on TICKER"
-returns **GO** (`python pretrade.py`). The check runs BEFORE the order, never after.
-No written entry and stop = automatic NO-GO.
+## 0. THE CHECK, THEN THE OWNER DECIDES (owner, 2026-11-27)
+Before any order, "Run my pre-trade check on TICKER" (`python pretrade.py`) writes up a
+**recommendation: GO or NO-GO**, with every reason. No written entry and stop = recommendation NO-GO.
+**The owner has the final say.** No order is created until the owner answers GO or NO.
+The owner may say GO to a NO-GO recommendation - that is logged in webull-journal.csv as an OVERRIDE
+with the reasons it overrode - or NO to a GO. Every other rule below feeds the recommendation.
 
 ## 1. Trading money is a fixed amount
 - TRADING_CAPITAL = $150 (set in pretrade.py; was $30, owner deposited ~$120 on 2026-11-19). Decided in advance.
@@ -47,7 +49,7 @@ claude/webull-paper-trading-lvj9ad). Decided on yesterday's COMPLETED daily bar,
 - Every Webull order still needs the owner's tap in the app: one alert before 9:30 with the day's Kim buys.
 
 ## 5. Paper first
-- No live Kim trade until the Alpaca paper bot has 30+ CLOSED Kim trades with positive
+- Recommendation is NO-GO until the Alpaca paper bot has 30+ CLOSED Kim trades with positive
   expectancy in R. 30 is a minimum, not proof. Hypothetical/shadow trades do not count.
 - R-multiple = profit or loss / dollars risked. Recorded on every trade.
 

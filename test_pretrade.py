@@ -67,3 +67,13 @@ def test_needs_kim_signal():
 def test_paper_gate_blocks():
     r = pretrade_check(GOOD, {"closed_trades": 12, "expectancy_r": 0.5})
     assert r["verdict"] == "NO-GO" and "paper gate" in r["reasons"][-1]
+
+
+def test_owner_has_final_say():
+    from pretrade import owner_decision
+    nogo = pretrade_check(dict(GOOD, setup_signal=False), PAPER_OK)
+    assert nogo["final_say"] == "OWNER"
+    d = owner_decision(nogo, "GO")
+    assert d["create_order"] and "OVERRIDE" in d["note"]
+    go = pretrade_check(GOOD, PAPER_OK)
+    assert owner_decision(go, "no")["create_order"] is False

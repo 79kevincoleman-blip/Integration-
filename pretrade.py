@@ -1,4 +1,6 @@
-"""Pre-trade gate for the Webull LIVE account (risk-sheet.md). Returns GO or NO-GO.
+"""Pre-trade check for the Webull LIVE account (risk-sheet.md). Writes up a RECOMMENDATION: GO or NO-GO,
+with every reason. Owner 2026-11-27: the OWNER has the final say - no order is created until the owner
+answers GO, and the owner may say GO to a NO-GO recommendation (logged as an override) or NO to a GO.
 
 Usage: python pretrade.py trade.json   (or import pretrade_check)
 trade.json keys: ticker, setup_signal (bool = Kim-daily signal on yesterday's close), price, bid, ask,
@@ -105,13 +107,25 @@ def pretrade_check(t, paper=None):
 
 
 def _result(out, fails):
-    out["verdict"] = "GO" if not fails else "NO-GO"
+    out["verdict"] = "GO" if not fails else "NO-GO"   # the recommendation
     out["reasons"] = fails
+    out["final_say"] = "OWNER"                         # no order until the owner answers GO or NO
     return out
 
 
+def owner_decision(result, owner_says):
+    """Record the owner's final call. Returns the journal note; an order may be created only if 'GO'."""
+    d = owner_says.strip().upper()
+    if d not in ("GO", "NO"):
+        raise ValueError("owner must answer GO or NO")
+    note = f"{result['ticker']}: recommended {result['verdict']}, owner said {d}"
+    if d == "GO" and result["verdict"] == "NO-GO":
+        note += " (OVERRIDE of: " + "; ".join(result["reasons"]) + ")"
+    return {"create_order": d == "GO", "note": note}
+
+
 def show(r):
-    print(f"== {r['ticker']}: {r['verdict']}")
+    print(f"== {r['ticker']}: recommendation {r['verdict']} - final say: owner (answer GO or NO)")
     for k, v in r.items():
         if k not in ("ticker", "verdict", "reasons"):
             print(f"   {k}: {v}")
