@@ -116,6 +116,17 @@ def manage(api, PAPER, data, positions, hist, open_orders, today, dry_run, log):
             log["actions"].append(act)
             mine = []
         stops = [o for o in mine if o.get("type") == "stop"]
+        day_stops = [o for o in stops if o.get("time_in_force") == "day"]
+        if day_stops:
+            # the entry's attached stop is a DAY order and would expire at the close (2026-11-27 half day):
+            # replace it with a GTC stop right away, at the higher of the two levels
+            stop = max(stop, max(float(o["stop_price"]) for o in day_stops))
+            act = {"type": "stop-to-gtc", "bot": "kim", "symbol": sym, "cancelled": [o["id"] for o in day_stops]}
+            if not dry_run:
+                for o in day_stops:
+                    api(PAPER, "DELETE", f"/v2/orders/{o['id']}")
+            log["actions"].append(act)
+            stops = [o for o in stops if o not in day_stops]
         if not stops:
             order = {"symbol": sym, "qty": str(abs(int(float(p["qty"])))), "side": "sell", "type": "stop",
                      "stop_price": str(stop), "time_in_force": "gtc"}
