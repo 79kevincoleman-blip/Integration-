@@ -28,7 +28,8 @@ import strategy_v42  # noqa: E402,F401  (owner 2026-11-19: all 4 "more trades" c
 import strategy_v43  # noqa: E402  (owner 2026-11-24: switch to C_slots sizing)
 import kim_live as KL  # noqa: E402  (owner 2026-11-25: Kim-daily replaces v4.3 for NEW entries)
 from kim_backtest import UNIVERSE as KIM_UNI  # noqa: E402
-ENTRIES = "kim"  # v4.3 positions (tag v42-) are still managed to exit; no new v4.3 entries
+ENTRIES = "kim"
+KIM_PAUSED = True  # owner 2026-11-27 "Pause Kim for now": no new buys; existing positions keep stops/exits  # v4.3 positions (tag v42-) are still managed to exit; no new v4.3 entries
 
 PAPER = "https://paper-api.alpaca.markets"
 DATA = "https://data.alpaca.markets"
@@ -235,7 +236,9 @@ def main(dry_run, trial=False, protect_only=False):
 
     if ENTRIES == "kim":  # exact tested rules: no drawdown halt (owner 2026-11-27)
         opens_today = isinstance(clock, dict) and str(clock.get("next_open", ""))[:10] == today
-        if (mode != "pre-market" or not opens_today) and not trial:
+        if KIM_PAUSED:
+            log["notes"].append("KIM PAUSED by owner (2026-11-27): no new Kim buys; open Kim positions still managed (stops, exits)")
+        elif (mode != "pre-market" or not opens_today) and not trial:
             log["notes"].append("Kim buys only in the pre-market run (signal on yesterday's close, buy at the open)")
         else:
             pending = {o["symbol"] for o in open_orders or [] if o["side"] == "buy"}
