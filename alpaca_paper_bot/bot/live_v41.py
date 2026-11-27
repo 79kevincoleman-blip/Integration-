@@ -134,6 +134,9 @@ def main(dry_run, trial=False, protect_only=False):
     kim_syms = {o["symbol"] for o in hist or [] if (o.get("client_order_id") or "").startswith(KL.TAG + "-")
                 and o.get("side") == "buy" and o.get("filled_at")}
     bot_syms -= kim_syms
+    if ENTRIES == "kim":  # owner 2026-11-27: Kim's exact rules take over the old bot's positions too
+        kim_syms |= bot_syms
+        bot_syms = set()
     kim_pos = [p for p in positions if p["symbol"] in kim_syms]
     held_all = {p["symbol"] for p in positions}
     held = {p["symbol"]: p for p in positions if p["symbol"] in bot_syms}
@@ -230,10 +233,8 @@ def main(dry_run, trial=False, protect_only=False):
         log["notes"].append("protect-only run: no exits/entries evaluated beyond protection")
         return log
 
-    if ENTRIES == "kim":
-        if equity < peak * (1 - HALT_DD):
-            log["notes"].append(f"HALT: equity {equity:.0f} is >10% below 1y peak {peak:.0f}; no new entries")
-        elif mode != "pre-market" and not trial:
+    if ENTRIES == "kim":  # exact tested rules: no drawdown halt (owner 2026-11-27)
+        if mode != "pre-market" and not trial:
             log["notes"].append("Kim buys only in the pre-market run (signal on yesterday's close, buy at the open)")
         else:
             pending = {o["symbol"] for o in open_orders or [] if o["side"] == "buy"}

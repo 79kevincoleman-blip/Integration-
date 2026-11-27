@@ -63,15 +63,25 @@ def trail_state(b, d_in, px, stop0):
     return stop, ("time stop (30 days)" if days >= MAX_HOLD else None), days
 
 
+ADOPT_TAGS = ("v42-",)  # owner 2026-11-27: Kim takes over the old bot's positions (GILD, TGT, DLTR); never "manual-"
+
+
 def entry_info(hist, sym):
     for o in hist or []:  # newest first
         cid = o.get("client_order_id") or ""
-        if o["symbol"] == sym and o.get("side") == "buy" and cid.startswith(TAG + "-") and o.get("filled_at"):
+        if o["symbol"] != sym or o.get("side") != "buy" or not o.get("filled_at"):
+            continue
+        if cid.startswith(TAG + "-"):
             try:
                 stop0 = int(cid.rsplit("-s", 1)[1]) / 100
             except (IndexError, ValueError):
                 return None
-            return {"px": float(o["filled_avg_price"]), "d_in": o["filled_at"][:10], "stop0": stop0}
+            return {"px": float(o["filled_avg_price"]), "d_in": o["filled_at"][:10], "stop0": stop0, "adopted": False}
+        if cid.startswith(ADOPT_TAGS):  # adopted: initial stop = that trade's original bracket stop
+            stops = [float(l["stop_price"]) for l in o.get("legs") or [] if l.get("stop_price")]
+            if not stops:
+                return None
+            return {"px": float(o["filled_avg_price"]), "d_in": o["filled_at"][:10], "stop0": stops[0], "adopted": True}
     return None
 
 
@@ -96,6 +106,15 @@ def manage(api, PAPER, data, positions, hist, open_orders, today, dry_run, log):
             log["actions"].append(act)
             continue
         stop = round(stop, 2)
+        if any(o.get("type") == "limit" for o in mine):
+            # adopted position still carries the old bot's take-profit/OCO orders: Kim has no profit target,
+            # so cancel them and replace with Kim's stop only
+            act = {"type": "adopt", "bot": "kim", "symbol": sym, "cancelled": [o["id"] for o in mine]}
+            if not dry_run:
+                for o in mine:
+                    api(PAPER, "DELETE", f"/v2/orders/{o['id']}")
+            log["actions"].append(act)
+            mine = []
         stops = [o for o in mine if o.get("type") == "stop"]
         if not stops:
             order = {"symbol": sym, "qty": str(abs(int(float(p["qty"])))), "side": "sell", "type": "stop",
