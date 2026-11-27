@@ -5,7 +5,7 @@ Rules only - no account data or credentials.
 ## 0. THE GATE (hard rule)
 No order is placed - by me or by you in the app - until "Run my pre-trade check on TICKER"
 returns **GO** (`python pretrade.py`). The check runs BEFORE the order, never after.
-No written stop and target = automatic NO-GO.
+No written entry and stop = automatic NO-GO.
 
 ## 1. Trading money is a fixed amount
 - TRADING_CAPITAL = $150 (set in pretrade.py; was $30, owner deposited ~$120 on 2026-11-19). Decided in advance.
@@ -13,40 +13,41 @@ No written stop and target = automatic NO-GO.
   the day it happens (type DEPOSIT / WITHDRAWAL, with a reason). Unlogged cash moves = NO-GO
   until explained.
 
-## 2. Sizing (owner, 2026-11-25 - same rules as slickRick / strategy.md, ALL Webull tasks)
-- Risk per trade = 5% of trading capital ($7.50 at $150). shares = dollars at risk / (entry - stop).
-- Max buy size = 25% of the account per position (caps the share count). Never more than cash on hand.
-- Max 12 open positions, each sized by the risk rule (most end up well under 25%).
-- Stop goes below the setup's structure (the low that would prove the idea wrong).
+## 2. Strategy = KIM-DAILY (owner, 2026-11-27; replaces the reversal/takeoff and structure setups)
+Same rules as the Alpaca paper bot (alpaca_paper_bot/bot/kim_live.py, backtest/kim_daily.py on branch
+claude/webull-paper-trading-lvj9ad). Decided on yesterday's COMPLETED daily bar, bought at the open.
+- Drop: down >= 10% from the 20-day high AND >= 3 x ATR(14); close < 20-day avg < 50-day avg.
+- Early warning: RSI(14) < 30 at some point in the last 20 days.
+- Buy signal (within 10 days of the drop, first one only): close > prior day's high, close > 5-day EMA,
+  volume >= 1.2 x 20-day average.
+- Stop: lowest low since the drop - 0.2 ATR (skip if more than 3 ATR away). Then only moves UP:
+  highest close - 2.5 ATR; at least breakeven once the trade is up 1R.
+- Sell: stop hit; or after +1R, 2 closes in a row below the 10-day EMA; or 30 trading days.
+- No profit target.
+- Tested: daily, 10 years, ~350 mostly large US stocks: +0.21R/trade, +245% without leverage vs SPY +280%,
+  worst drop 21%. NOT tested on stocks under $20 (see 4). Failed on 15-minute bars and on crypto.
 
-## 3. Costs are inside every trade
-- Cost per side = spread % x position (conservative: full spread each way) + fees.
-- Breakeven win rate = (risk + costs) / (reward + risk). The check prints it for every trade.
-- NO-GO if reward:risk < 2:1, or the breakeven win rate after costs is above 40%.
+## 3. Sizing (owner, 2026-11-27)
+- Risk per trade = 1% of trading capital ($1.50 at $150). shares = dollars at risk / (entry - stop).
+- Each position at most 25% of the account ($37.50 at $150).
+- NEVER more than the available cash balance. No margin.
+- Max 10 open positions.
+- Fractional shares where Webull allows them.
 
-## 4. Universe (applied before any setup) - owner, 2026-11-25
-- **Price $50.00 or under** for every Webull scan, plan, watchlist and buy.
-- Under $5, all strategy.md penny limits also apply: market cap >= $50M, spread <= 3%,
-  no new 52-week low in the last 5 trading days, filings checked (reverse splits, offerings, dilution).
-  These block IMCC-type names (IMCC ~$2M cap, TNMG ~$1.7M, USDE no revenue).
-- (Replaces the earlier $5 minimum / $1B cap / 0.5% spread filter.)
-- Inside the universe the setup is: downtrend, then a confirmed reversal (webull_strategy.py):
-  near the downtrend low + at least 1 signal (close above prior high, RSI back above 30, up day
-  on 1.5x volume), or a takeoff (higher low + break of the bounce high on volume). No signal = no trade.
-- **Backtest 2026-11-19 (paper bot, 3y, liquid names): FAILED** - 233 trades, 36% win, -0.05R per trade,
-  -8.6% vs SPY +65.5%. This setup cannot go live. A new setup must pass the paper bot's backtest first.
+## 4. Universe (owner, 2026-11-27)
+- **Price under $20.00** for every Webull scan, plan, watchlist and buy.
+- Under $5, the penny limits also apply: market cap >= $50M, spread <= 3%, no new 52-week low in the
+  last 5 trading days, filings checked (reverse splits, offerings, dilution).
+- Kim's backtest did not cover a sub-$20 universe; cheap stocks have wider spreads and more failures.
+  The paper gate (5) is what proves it.
 
-## 4c. Structure check (owner, 2026-11-25) - scan/structure_scan.py
-- Look for any stock trading low versus ITS OWN history (near its 1y low / bottom of its 2y range),
-  not only reversals.
-- Then require the fall to slow (20-day slope flattening, smaller daily ranges) and a structure of
-  2 higher lows AND 2 higher highs (stage 2). 1 HL + 1 HH = stage 1 = watch only.
-- Compare with that stock's history: past times it was this close to its low, how often was it up 20
-  trading days later, with and without the stage-2 structure.
-- Reputation check before any GO: analyst ratings, recent news, dilution/reverse splits, debt.
+## 4b. Costs and orders
+- Cost per round trip = 2 x spread % x position + fees. NO-GO if costs > 20% of the dollars at risk.
+- LIMIT orders only, at most 2% above yesterday's close (Kim buys at the open; no chasing gaps).
+- Every Webull order still needs the owner's tap in the app: one alert before 9:30 with the day's Kim buys.
 
 ## 5. Paper first
-- No live setup until the Alpaca paper bot has 30+ CLOSED trades of that setup with positive
+- No live Kim trade until the Alpaca paper bot has 30+ CLOSED Kim trades with positive
   expectancy in R. 30 is a minimum, not proof. Hypothetical/shadow trades do not count.
 - R-multiple = profit or loss / dollars risked. Recorded on every trade.
 
@@ -60,5 +61,6 @@ the long-term SPY sleeve becomes 80% and active trading 20% - not the other way 
 - One weekly page (weekly.md): scoreboard + the one rule broken that week. No daily reviews.
 
 ## 8. Order mechanics (from risk-rules.md 10-11)
-LIMIT orders only, after 10:00 AM ET, entry at a pullback level. Approval: I send the GO sheet,
-you say yes, I create the order, you confirm in the Webull app.
+LIMIT orders only, placed for the 9:30 open, at most 2% above yesterday's close (Kim, 2026-11-27;
+replaces "after 10:00 AM, at a pullback level"). Approval: I send the GO sheet, you say yes, I create
+the order, you confirm in the Webull app.

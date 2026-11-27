@@ -1,19 +1,24 @@
 """Pre-trade gate for the Webull LIVE account (risk-sheet.md). Returns GO or NO-GO.
 
 Usage: python pretrade.py trade.json   (or import pretrade_check)
-trade.json keys: ticker, setup_signal (bool), price, bid, ask, market_cap, entry, stop, target,
-                 [new_52w_low_5d, filings_ok - required under $5],
-                 order_type (LIMIT), et_time ("HH:MM"), cash, [fees], [unexplained_cash_moves]
+trade.json keys: ticker, setup_signal (bool = Kim-daily signal on yesterday's close), price, bid, ask,
+                 market_cap, entry (limit price), stop (Kim's initial stop), prior_close,
+                 [new_52w_low_5d, filings_ok - required under $5], order_type (LIMIT), et_time ("HH:MM"),
+                 cash (available balance), [account_value], [fees], [unexplained_cash_moves], [open_positions]
+Owner 2026-11-27: strategy = KIM-DAILY (alpaca_paper_bot/bot/kim_live.py on branch claude/webull-paper-trading-lvj9ad).
+Kim has no profit target: it exits on a trailing stop, a momentum fade or 30 trading days, so the old
+reward:risk >= 2 and breakeven-win-rate checks are replaced by a cost check (round-trip costs <= 20% of risk).
 """
 import json, sys
 
 TRADING_CAPITAL = 150.0
-RISK_PCT = 0.05
-MAX_PRICE, PENNY_PRICE = 50.0, 5.0                 # owner 2026-11-25: $50 cap for all Webull tasks
+RISK_PCT = 0.01                                      # owner 2026-11-27: 1% of the account per trade
+MAX_PRICE, PENNY_PRICE = 20.0, 5.0                 # owner 2026-11-27: stocks priced under $20 only
 PENNY_MIN_MCAP, PENNY_MAX_SPREAD = 50e6, 0.03       # strategy.md penny limits (under $5)
 POS_CAP = 0.25                                       # max 25% of the account per buy
-MIN_RR, MAX_BREAKEVEN_WR = 2.0, 0.40
-MAX_POSITIONS = 12
+MAX_COST_OF_RISK = 0.20      # round-trip spread + fees may use at most 20% of the dollars at risk
+MAX_GAP_OVER_CLOSE = 0.02     # limit price at most 2% above yesterday's close (Kim buys at the open)
+MAX_POSITIONS = 10            # owner 2026-11-27
 PAPER_MIN_TRADES = 30
 DEFAULT_FEES = 0.02          # SEC/TAF on a small sell, both sides rounded up
 
@@ -26,14 +31,14 @@ def paper_ok(paper):
 def pretrade_check(t, paper=None):
     paper = paper or {"closed_trades": 0, "expectancy_r": 0.0}
     fails, out = [], {"ticker": t["ticker"]}
-    entry, stop, target = t.get("entry"), t.get("stop"), t.get("target")
+    entry, stop = t.get("entry"), t.get("stop")
 
-    # 0. written stop + target
-    if not stop or not target or not entry:
-        fails.append("no written entry/stop/target")
+    # 0. written entry + stop (Kim's initial stop; it is then trailed up, never down)
+    if not stop or not entry:
+        fails.append("no written entry/stop")
         return _result(out, fails)
-    if not stop < entry < target:
-        fails.append("need stop < entry < target")
+    if not stop < entry:
+        fails.append("need stop < entry")
         return _result(out, fails)
 
     # max positions
@@ -44,11 +49,11 @@ def pretrade_check(t, paper=None):
     if t.get("unexplained_cash_moves"):
         fails.append(f"unexplained cash moves {t['unexplained_cash_moves']} - log them in webull-journal.csv")
 
-    # 4. universe: $50 cap; penny limits under $5
+    # 4. universe: under $20; penny limits under $5
     spread = (t["ask"] - t["bid"]) / t["price"]
     out["spread_pct"] = round(spread * 100, 2)
-    if t["price"] > MAX_PRICE:
-        fails.append(f"price ${t['price']} > ${MAX_PRICE:.0f} cap")
+    if t["price"] >= MAX_PRICE:
+        fails.append(f"price ${t['price']} not under ${MAX_PRICE:.0f}")
     if t["price"] < PENNY_PRICE:
         if t["market_cap"] < PENNY_MIN_MCAP:
             fails.append(f"penny: market cap ${t['market_cap']/1e6:,.1f}M < $50M")
@@ -59,39 +64,38 @@ def pretrade_check(t, paper=None):
         if not t.get("filings_ok", False):
             fails.append("penny: filings not cleared (reverse split / offering / dilution)")
 
-    # 2. size by risk, capped at 25% of the account and the cash on hand
-    risk_usd = TRADING_CAPITAL * RISK_PCT
+    # 2. size by 1% risk, capped at 25% of the account and NEVER more than the available balance
+    capital = min(t.get("account_value", TRADING_CAPITAL), TRADING_CAPITAL)
+    risk_usd = capital * RISK_PCT
     per_share = entry - stop
-    shares = min(risk_usd / per_share, TRADING_CAPITAL * POS_CAP / entry, t["cash"] / entry)
+    shares = min(risk_usd / per_share, capital * POS_CAP / entry, max(t["cash"], 0) / entry)
+    if shares <= 0:
+        fails.append("no available balance")
+        return _result(out, fails)
     position = shares * entry
     risk_usd = shares * per_share
     out.update(shares=round(shares, 4), position_usd=round(position, 2), risk_usd=round(risk_usd, 2))
 
-    # 3. costs + breakeven
+    # 3. costs must be small next to the risk (Kim has no fixed target)
     fees = t.get("fees", DEFAULT_FEES)
     costs = 2 * spread * position + fees
-    reward_usd = shares * (target - entry)
-    rr = round((target - entry) / per_share, 4)
-    breakeven = (risk_usd + costs) / (reward_usd + risk_usd)
-    out.update(rr=round(rr, 2), costs_usd=round(costs, 2), reward_usd=round(reward_usd, 2),
-               costs_pct_of_reward=round(100 * costs / reward_usd, 1) if reward_usd else None,
-               breakeven_win_rate_no_costs=round(100 / (1 + rr), 1),
-               breakeven_win_rate_after_costs=round(100 * breakeven, 1))
-    if rr < MIN_RR:
-        fails.append(f"reward:risk {rr:.2f} < 2")
-    if breakeven > MAX_BREAKEVEN_WR:
-        fails.append(f"breakeven win rate after costs {breakeven*100:.1f}% > 40%")
+    out.update(costs_usd=round(costs, 2), costs_pct_of_risk=round(100 * costs / risk_usd, 1) if risk_usd else None)
+    if risk_usd and costs > MAX_COST_OF_RISK * risk_usd:
+        fails.append(f"costs ${costs:.2f} are {100*costs/risk_usd:.0f}% of the ${risk_usd:.2f} at risk (max 20%)")
 
-    # 4b. setup signal (webull_strategy.evaluate must say BUY_LOW or BUY_TAKEOFF)
+    # 4b. setup signal: Kim-daily must flag this stock on yesterday's close
     if not t.get("setup_signal", False):
-        fails.append("no reversal/takeoff signal from webull_strategy")
+        fails.append("no Kim-daily signal")
 
-    # 8. order mechanics
+    # 8. order mechanics: LIMIT only, at the open, not chasing a gap
     if t.get("order_type", "LIMIT").upper() != "LIMIT":
         fails.append("not a LIMIT order")
-    hh, mm = map(int, t.get("et_time", "10:00").split(":"))
-    if (hh, mm) < (10, 0):
-        fails.append("before 10:00 AM ET")
+    pc = t.get("prior_close")
+    if pc and entry > pc * (1 + MAX_GAP_OVER_CLOSE):
+        fails.append(f"limit {entry} is more than 2% above yesterday's close {pc}")
+    hh, mm = map(int, t.get("et_time", "09:30").split(":"))
+    if (hh, mm) < (9, 30) and not t.get("queued_for_open", True):
+        fails.append("before the 9:30 open")
 
     # 5. paper first
     if not paper_ok(paper):
