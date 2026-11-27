@@ -1,1 +1,1 @@
-{"dry_run": true, "trial": true, "nonce": "2026-11-27-health-test"}
+{"dry_run": false, "protect_only": true, "nonce": "2026-11-27-protect-after-halfday"}

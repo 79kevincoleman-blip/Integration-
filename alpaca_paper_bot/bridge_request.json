@@ -1,1 +1,1 @@
-[{"action":"account","nonce":"2026-11-27-health-test"},{"action":"positions"},{"action":"orders","status":"open"}]
+[{"action":"orders","status":"open","nonce":"2026-11-27-protect-verify"}]
