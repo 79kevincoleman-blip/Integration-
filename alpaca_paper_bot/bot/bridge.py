@@ -59,6 +59,24 @@ def run(req):
         o = {"symbol": req["symbol"], "qty": str(req["qty"]), "side": req.get("side", "buy"), "type": "market",
              "time_in_force": "day", "client_order_id": req.get("client_id")}
         return call(PAPER, "POST", "/v2/orders", o)
+    if act == "stop_atr":  # owner's manual positions: fixed GTC stop = last close - mult x ATR(14)
+        from datetime import date, timedelta
+        end = (date.today() - timedelta(days=1)).isoformat() + "T23:00:00Z"
+        start = (date.today() - timedelta(days=60)).isoformat()
+        s, j = call(DATA, "GET", f"/v2/stocks/{req['symbol']}/bars?timeframe=1Day&start={start}&end={end}&limit=100&feed=sip&adjustment=all")
+        bars = (j or {}).get("bars") or [] if isinstance(j, dict) else []
+        if len(bars) < 15:
+            return 400, f"not enough bars ({len(bars)})"
+        tr = [max(b["h"], p["c"]) - min(b["l"], p["c"]) for p, b in zip(bars[:-1], bars[1:])][-14:]
+        atr = sum(tr) / len(tr)
+        stop = round(bars[-1]["c"] - req.get("mult", 2.5) * atr, 2)
+        if stop <= 0:
+            return 400, f"stop would be <= 0 (close {bars[-1]['c']}, ATR {atr:.3f})"
+        o = {"symbol": req["symbol"], "qty": str(req["qty"]), "side": "sell", "type": "stop",
+             "stop_price": str(stop), "time_in_force": "gtc", "client_order_id": req.get("client_id")}
+        st, res = call(PAPER, "POST", "/v2/orders", o)
+        return st, {"last_close": bars[-1]["c"], "atr14": round(atr, 4), "stop": stop,
+                    "order_id": res.get("id") if isinstance(res, dict) else res, "status": res.get("status") if isinstance(res, dict) else None}
     if act == "cancel":
         return call(PAPER, "DELETE", "/v2/orders/" + req["order_id"])
     if act == "close":

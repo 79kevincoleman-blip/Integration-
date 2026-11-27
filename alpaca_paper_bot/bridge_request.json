@@ -1,1 +1,3 @@
-[{"action":"account","nonce":"2026-11-27-1022-sync"},{"action":"positions"},{"action":"orders","status":"open"}]
+[{"action":"stop_atr","symbol":"MARA","qty":15,"mult":2.5,"client_id":"manual-stop-MARA-20261127","nonce":"2026-11-27-manual-stops"},
+ {"action":"stop_atr","symbol":"TNMG","qty":15,"mult":2.5,"client_id":"manual-stop-TNMG-20261127"},
+ {"action":"stop_atr","symbol":"SKYD","qty":15,"mult":2.5,"client_id":"manual-stop-SKYD-20261127"}]
