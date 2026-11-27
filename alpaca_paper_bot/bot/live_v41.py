@@ -234,7 +234,8 @@ def main(dry_run, trial=False, protect_only=False):
         return log
 
     if ENTRIES == "kim":  # exact tested rules: no drawdown halt (owner 2026-11-27)
-        if mode != "pre-market" and not trial:
+        opens_today = isinstance(clock, dict) and str(clock.get("next_open", ""))[:10] == today
+        if (mode != "pre-market" or not opens_today) and not trial:
             log["notes"].append("Kim buys only in the pre-market run (signal on yesterday's close, buy at the open)")
         else:
             pending = {o["symbol"] for o in open_orders or [] if o["side"] == "buy"}
