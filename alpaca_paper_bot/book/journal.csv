@@ -28,3 +28,4 @@ date,id,symbol,setup,entry,stop,target,shares,reason,exit,exit_reason,pnl,r_mult
 2026-11-27,f2e5612b,PLUG,kim,mkt open,0.81,,2921,Kim signal (ref close 1.065; risk ~$745),,,,,
 2026-11-27,adopt,GILD/TGT/DLTR,kim,,,,,Kim adopted: targets cancelled; GTC stops GILD 166.40 TGT 161.84 DLTR 140.92,,,,,
 2026-11-27,fills,ASTS/JOBY/PATH/PLUG,kim,,,,,FILLED at open: ASTS 25.74 JOBY 3.993 PATH 12.65 PLUG 1.15 (stops 21.74/3.18/11.36/0.81 active),,,,,
+2026-11-27,run-1115,,,,,,,no exits; no signals (Kim buys pre-market only); all stops held,,,,,
