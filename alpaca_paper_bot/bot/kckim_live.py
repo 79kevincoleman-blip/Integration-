@@ -37,18 +37,23 @@ def flat(orders):
             yield leg
 
 
-def main(dry_run):
+def main(dry_run, trial=False):
     log = {"run_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "dry_run": dry_run, "actions": [], "notes": []}
     today = date.today().isoformat()
     s, cal = api(PAPER, "GET", f"/v2/calendar?start={(date.today() - timedelta(days=130)).isoformat()}&end={today}")
     if s != 200 or not cal:
         raise SystemExit(f"calendar error {s} {cal}")
-    if cal[-1]["date"] != today:
-        log["notes"].append("market closed today; nothing to do")
-        return log
-    last_session = cal[-2]["date"]
     _, clock = api(PAPER, "GET", "/v2/clock")
-    pre_open = isinstance(clock, dict) and not clock.get("is_open") and str(clock.get("next_open", ""))[:10] == today
+    if cal[-1]["date"] != today:
+        if not (dry_run and trial):
+            log["notes"].append("market closed today; nothing to do")
+            return log
+        last_session = cal[-1]["date"]  # TRIAL: act as the pre-market run of the next session, no orders
+        pre_open = True
+        log["notes"].append(f"TRIAL (dry run, market closed): using bars through {last_session}; no orders")
+    else:
+        last_session = cal[-2]["date"]
+        pre_open = isinstance(clock, dict) and not clock.get("is_open") and str(clock.get("next_open", ""))[:10] == today
     _, positions = api(PAPER, "GET", "/v2/positions")
     _, open_orders = api(PAPER, "GET", "/v2/orders?status=open&nested=true&limit=200")
     _, hist = api(PAPER, "GET", "/v2/orders?status=closed&limit=500&direction=desc&nested=true")
@@ -122,7 +127,7 @@ def main(dry_run):
     data = {k: sorted(v, key=lambda x: x["d"]) for k, v in data.items() if v}
     picks = []
     for sym in universe:
-        b = KL.completed(data.get(sym) or [], today)
+        b = [x for x in (data.get(sym) or []) if x["d"] <= last_session]
         if not b or b[-1]["c"] > MAX_PRICE:
             continue
         if KL.signal(b):
@@ -155,4 +160,4 @@ def main(dry_run):
 
 if __name__ == "__main__":
     req = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else {}
-    print("KCKIM " + json.dumps(main(bool(req.get("dry_run", False)))))
+    print("KCKIM " + json.dumps(main(bool(req.get("dry_run", False)), bool(req.get("trial", False)))))
