@@ -5,20 +5,32 @@ GOOD = dict(ticker="X", price=12.0, bid=11.99, ask=12.01, market_cap=5e9, entry=
             order_type="LIMIT", et_time="09:30", cash=200.0, setup_signal=True)
 
 
-def test_go_and_1pct_sizing():
+def test_go_and_50pct_sizing():
     r = pretrade_check(GOOD, PAPER_OK)
     assert r["verdict"] == "GO", r["reasons"]
-    # 1% of $150 = $1.50 at risk; $1.20/share -> 1.25 sh ($15, under the 25% = $37.50 cap)
-    assert r["shares"] == 1.25 and r["position_usd"] == 15.0 and r["risk_usd"] == 1.5
+    # no balance given -> $150 fallback; 50% = $75 at $12 -> 6.25 sh
+    assert r["shares"] == 6.25 and r["position_usd"] == 75.0
 
 
-def test_25pct_cap_binds_on_tight_stop():
-    r = pretrade_check(dict(GOOD, stop=11.9), PAPER_OK)
-    assert r["position_usd"] == 37.5  # 25% of $150
+def test_real_balance_used():
+    r = pretrade_check(dict(GOOD, account_value=300.0, cash=300.0), PAPER_OK)
+    assert r["position_usd"] == 150.0  # 50% of the real $300 balance
+
+
+def test_tier_stops():
+    from pretrade import tier_stop
+    assert tier_stop(4.0) == 2.0 and tier_stop(5.0) == 2.5      # 50%
+    assert tier_stop(8.0) == 6.0 and tier_stop(10.0) == 7.5     # 25%
+    assert tier_stop(12.0) == 9.6 and tier_stop(15.0) == 12.0   # 20%
+    r = pretrade_check(dict(GOOD, stop=11.9), PAPER_OK)          # written stop ignored
+    assert r["stop"] == 9.6 and r["exit_after_days"] == 60
 
 
 def test_never_more_than_available_balance():
-    r = pretrade_check(dict(GOOD, stop=11.9, cash=10.0), PAPER_OK)
+    # owner example: 18 sh at $4 = $72 of $150 -> only ~$78 cash left for the next buy
+    r = pretrade_check(dict(GOOD, cash=78.0, account_value=150.0), PAPER_OK)
+    assert r["position_usd"] == 75.0
+    r = pretrade_check(dict(GOOD, cash=10.0), PAPER_OK)
     assert r["position_usd"] == 10.0
     assert "no available balance" in pretrade_check(dict(GOOD, cash=0), PAPER_OK)["reasons"]
 
@@ -28,13 +40,15 @@ def test_max_10_positions():
     assert pretrade_check(dict(GOOD, open_positions=9), PAPER_OK)["verdict"] == "GO"
 
 
-def test_price_under_20():
-    assert "not under $20" in " ".join(pretrade_check(dict(GOOD, price=20.0, bid=19.99, ask=20.01, entry=20.0, stop=18.0, prior_close=20.0), PAPER_OK)["reasons"])
-    assert pretrade_check(dict(GOOD, price=19.99, bid=19.98, ask=20.0, entry=19.99, stop=18.0, prior_close=19.9), PAPER_OK)["verdict"] == "GO"
+def test_price_at_or_under_15():
+    t = dict(GOOD, price=15.01, bid=15.0, ask=15.02, entry=15.01, prior_close=15.0)
+    assert "over $15" in " ".join(pretrade_check(t, PAPER_OK)["reasons"])
+    t = dict(GOOD, price=15.0, bid=14.99, ask=15.01, entry=15.0, prior_close=14.9)
+    assert pretrade_check(t, PAPER_OK)["verdict"] == "GO"
 
 
-def test_no_stop_is_no_go():
-    r = pretrade_check(dict(GOOD, stop=None), PAPER_OK)
+def test_no_entry_is_no_go():
+    r = pretrade_check(dict(GOOD, entry=None), PAPER_OK)
     assert r["verdict"] == "NO-GO" and "no written" in r["reasons"][0]
 
 

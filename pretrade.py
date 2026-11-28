@@ -8,21 +8,31 @@ trade.json keys: ticker, setup_signal (bool = Kim-daily signal on yesterday's cl
                  [new_52w_low_5d, filings_ok - required under $5], order_type (LIMIT), et_time ("HH:MM"),
                  cash (available balance), [account_value], [fees], [unexplained_cash_moves], [open_positions]
 Owner 2026-11-27: strategy = KIM-DAILY (alpaca_paper_bot/bot/kim_live.py on branch claude/webull-paper-trading-lvj9ad).
-Kim has no profit target: it exits on a trailing stop, a momentum fade or 30 trading days, so the old
-reward:risk >= 2 and breakeven-win-rate checks are replaced by a cost check (round-trip costs <= 20% of risk).
+Kim has no profit target, so the old reward:risk >= 2 and breakeven-win-rate checks are replaced by a cost check
+(round-trip costs <= 20% of risk).
+Owner 2026-11-28 ("Yes"): VERSION B rules (= Alpaca paper bot KCkim, bot/kckim_live.py):
+  price <= $15; each position up to 50% of the balance, never more than available cash; fixed stop by price tier
+  (<= $5: 50% below entry, $5.01-$10: 25%, $10.01-$15: 20%), never moved; exit on the stop or after 60 trading days.
+  `stop` in trade.json is ignored: the tier stop is used. Capital = the real Webull balance (account_value);
+  $150 only if no balance is given (owner: "150 keep or whatever is my balance").
 """
 import json, sys
 
-TRADING_CAPITAL = 150.0
-RISK_PCT = 0.01                                      # owner 2026-11-27: 1% of the account per trade
-MAX_PRICE, PENNY_PRICE = 20.0, 5.0                 # owner 2026-11-27: stocks priced under $20 only
+TRADING_CAPITAL = 150.0                              # fallback only; the real balance (account_value) is used
+MAX_PRICE, PENNY_PRICE = 15.0, 5.0                 # owner 2026-11-28: stocks priced at or under $15
+MAX_HOLD_DAYS = 60                                   # owner 2026-11-28: time exit after 60 trading days
 PENNY_MIN_MCAP, PENNY_MAX_SPREAD = 50e6, 0.03       # strategy.md penny limits (under $5)
-POS_CAP = 0.25                                       # max 25% of the account per buy
+POS_CAP = 0.50                                       # owner 2026-11-28: max 50% of the balance per buy
 MAX_COST_OF_RISK = 0.20      # round-trip spread + fees may use at most 20% of the dollars at risk
 MAX_GAP_OVER_CLOSE = 0.02     # limit price at most 2% above yesterday's close (Kim buys at the open)
 MAX_POSITIONS = 10            # owner 2026-11-27
 PAPER_MIN_TRADES = 30
 DEFAULT_FEES = 0.02          # SEC/TAF on a small sell, both sides rounded up
+
+
+def tier_stop(px):
+    """Owner 2026-11-28: <= $5 -> 50% below entry; $5.01-$10 -> 25%; $10.01-$15 -> 20%."""
+    return round(px * (0.50 if px <= 5 else 0.75 if px <= 10 else 0.80), 4)
 
 
 def paper_ok(paper):
@@ -33,15 +43,14 @@ def paper_ok(paper):
 def pretrade_check(t, paper=None):
     paper = paper or {"closed_trades": 0, "expectancy_r": 0.0}
     fails, out = [], {"ticker": t["ticker"]}
-    entry, stop = t.get("entry"), t.get("stop")
+    entry = t.get("entry")
 
-    # 0. written entry + stop (Kim's initial stop; it is then trailed up, never down)
-    if not stop or not entry:
-        fails.append("no written entry/stop")
+    # 0. written entry; the stop is the fixed price-tier stop (never moved)
+    if not entry or entry <= 0:
+        fails.append("no written entry")
         return _result(out, fails)
-    if not stop < entry:
-        fails.append("need stop < entry")
-        return _result(out, fails)
+    stop = tier_stop(entry)
+    out.update(stop=stop, stop_pct=round(100 * (1 - stop / entry)), exit_after_days=MAX_HOLD_DAYS)
 
     # max positions
     if t.get("open_positions", 0) >= MAX_POSITIONS:
@@ -51,11 +60,11 @@ def pretrade_check(t, paper=None):
     if t.get("unexplained_cash_moves"):
         fails.append(f"unexplained cash moves {t['unexplained_cash_moves']} - log them in webull-journal.csv")
 
-    # 4. universe: under $20; penny limits under $5
+    # 4. universe: at or under $15; penny limits under $5
     spread = (t["ask"] - t["bid"]) / t["price"]
     out["spread_pct"] = round(spread * 100, 2)
-    if t["price"] >= MAX_PRICE:
-        fails.append(f"price ${t['price']} not under ${MAX_PRICE:.0f}")
+    if t["price"] > MAX_PRICE:
+        fails.append(f"price ${t['price']} is over ${MAX_PRICE:.0f}")
     if t["price"] < PENNY_PRICE:
         if t["market_cap"] < PENNY_MIN_MCAP:
             fails.append(f"penny: market cap ${t['market_cap']/1e6:,.1f}M < $50M")
@@ -66,11 +75,10 @@ def pretrade_check(t, paper=None):
         if not t.get("filings_ok", False):
             fails.append("penny: filings not cleared (reverse split / offering / dilution)")
 
-    # 2. size by 1% risk, capped at 25% of the account and NEVER more than the available balance
-    capital = min(t.get("account_value", TRADING_CAPITAL), TRADING_CAPITAL)
-    risk_usd = capital * RISK_PCT
+    # 2. size: up to 50% of the balance, NEVER more than the available cash (no margin)
+    capital = t.get("account_value") or TRADING_CAPITAL
     per_share = entry - stop
-    shares = min(risk_usd / per_share, capital * POS_CAP / entry, max(t["cash"], 0) / entry)
+    shares = min(capital * POS_CAP / entry, max(t["cash"], 0) / entry)
     if shares <= 0:
         fails.append("no available balance")
         return _result(out, fails)
